@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Strands — FAQ Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&amp;family=Inter:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f0f4f8;
+    --surface: #ffffff;
+    --border: #dde3ea;
+    --accent: #1a56db;
+    --accent-dark: #1340b0;
+    --accent-light: #ebf0fd;
+    --text: #111827;
+    --muted: #6b7280;
+    --bot-bg: #f8fafc;
+    --user-bg: #1a56db;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 20px;
+    background-image: radial-gradient(circle at 85% 15%, rgba(26,86,219,0.07) 0%, transparent 50%),
+                      radial-gradient(circle at 10% 85%, rgba(26,86,219,0.04) 0%, transparent 40%);
+  }
+
+  .wrapper { width: 100%; max-width: 720px; }
+
+  .header {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 24px;
+    animation: fadeDown 0.5s ease both;
+  }
+
+  .logo-mark {
+    width: 48px; height: 48px; background: var(--accent);
+    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: white;
+    flex-shrink: 0; box-shadow: 0 4px 14px rgba(26,86,219,0.3);
+    letter-spacing: -0.5px;
+  }
+
+  .header-text h1 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: var(--text); }
+  .header-text p { font-size: 13px; color: var(--muted); margin-top: 2px; font-weight: 300; }
+
+  .status-dot {
+    width: 7px; height: 7px; background: #22c55e; border-radius: 50%;
+    display: inline-block; margin-right: 5px; animation: pulse 2s infinite;
+  }
+
+  .chat-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);
+    animation: fadeUp 0.6s ease both 0.1s;
+  }
+
+  .messages {
+    height: 460px; overflow-y: auto;
+    padding: 24px 22px;
+    display: flex; flex-direction: column; gap: 14px;
+    scroll-behavior: smooth;
+  }
+
+  .messages::-webkit-scrollbar { width: 4px; }
+  .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .message { display: flex; gap: 10px; animation: msgIn 0.3s ease both; }
+  .message.user { flex-direction: row-reverse; }
+
+  .avatar {
+    width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; font-family: 'Syne', sans-serif;
+  }
+
+  .bot-avatar { background: var(--accent); color: white; box-shadow: 0 2px 8px rgba(26,86,219,0.25); }
+  .user-avatar { background: #e5e7eb; color: var(--muted); }
+
+  .bubble {
+    max-width: 80%; padding: 12px 16px; border-radius: 14px;
+    font-size: 14px; line-height: 1.7;
+  }
+
+  .bot .bubble {
+    background: var(--bot-bg); border: 1px solid var(--border);
+    border-top-left-radius: 4px; color: var(--text);
+  }
+
+  .user .bubble { background: var(--user-bg); border-top-right-radius: 4px; color: white; }
+  .bubble a { color: var(--accent); text-decoration: underline; }
+  .user .bubble a { color: #c7d9ff; }
+
+  .dots { display: flex; gap: 4px; align-items: center; padding: 4px 2px; }
+  .dots span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent); animation: bounce 1.2s infinite;
+  }
+  .dots span:nth-child(2) { animation-delay: 0.2s; }
+  .dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  .tabs {
+    display: flex; gap: 6px; padding: 14px 22px 0;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    background: none; border: none; padding: 7px 14px;
+    font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 500;
+    color: var(--muted); cursor: pointer; border-radius: 8px 8px 0 0;
+    white-space: nowrap; transition: all 0.2s;
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+
+  .tab-btn:hover { color: var(--accent); background: var(--accent-light); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--accent-light); }
+
+  .suggestions {
+    padding: 12px 22px 14px;
+    display: flex; flex-wrap: wrap; gap: 7px;
+  }
+
+  .suggestion-btn {
+    background: var(--accent-light); border: 1px solid rgba(26,86,219,0.2);
+    color: var(--accent-dark); font-family: 'Inter', sans-serif;
+    font-size: 12.5px; padding: 6px 13px; border-radius: 20px;
+    cursor: pointer; transition: all 0.2s ease;
+  }
+
+  .suggestion-btn:hover {
+    background: var(--accent); color: white; border-color: var(--accent);
+    transform: translateY(-1px); box-shadow: 0 3px 10px rgba(26,86,219,0.25);
+  }
+
+  .input-area {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 18px; border-top: 1px solid var(--border); background: #fafbfc;
+  }
+
+  .input-area input {
+    flex: 1; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 14px; outline: none;
+    color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px;
+    transition: border-color 0.2s;
+  }
+
+  .input-area input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,86,219,0.1); }
+  .input-area input::placeholder { color: #bbb; }
+
+  .send-btn {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--accent); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(26,86,219,0.3);
+  }
+
+  .send-btn:hover { background: var(--accent-dark); transform: translateY(-1px); }
+  .send-btn svg { width: 16px; height: 16px; fill: white; }
+
+  .footer {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 16px; animation: fadeUp 0.6s ease both 0.2s;
+  }
+
+  .footer-left { font-size: 12px; color: var(--muted); }
+  .footer-left a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .footer-right { font-size: 12px; color: #bbb; }
+
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-14px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes msgIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes bounce { 0%,60%,100% { transform:translateY(0); } 30% { transform:translateY(-5px); } }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+</style>
+</head>
+<body>
+<div class="wrapper">
+<div class="header">
+<div class="logo-mark">STR<br/>ANDS</div>
+<div class="header-text">
+<h1>Strands Support</h1>
+<p><span class="status-dot"></span>FAQ Assistant · Always available · No login needed</p>
+</div>
+</div>
+<div class="chat-box">
+<div class="tabs" id="tabs">
+<button class="tab-btn active" onclick="setCategory('all', this)">All Topics</button>
+<button class="tab-btn" onclick="setCategory('tech', this)">Tech &amp; Facts</button>
+<button class="tab-btn" onclick="setCategory('order', this)">Orders &amp; Delivery</button>
+<button class="tab-btn" onclick="setCategory('warranty', this)">Warranty &amp; Returns</button>
+<button class="tab-btn" onclick="setCategory('canbus', this)">CAN bus &amp; XBB</button>
+<button class="tab-btn" onclick="setCategory('product', this)">Products</button>
+<button class="tab-btn" onclick="setCategory('contact', this)">Contact</button>
+</div>
+<div class="messages" id="messages"></div>
+<div class="suggestions" id="suggestions">
+<button class="suggestion-btn" onclick="ask(this)">What light technology types exist?</button>
+<button class="suggestion-btn" onclick="ask(this)">What is lumen and lux?</button>
+<button class="suggestion-btn" onclick="ask(this)">What are ECE regulations?</button>
+<button class="suggestion-btn" onclick="ask(this)">How long is the warranty?</button>
+<button class="suggestion-btn" onclick="ask(this)">How do I track my order?</button>
+<button class="suggestion-btn" onclick="ask(this)">Do I need a CAN bus interface?</button>
+<button class="suggestion-btn" onclick="ask(this)">What is IP rating?</button>
+<button class="suggestion-btn" onclick="ask(this)">How do I contact support?</button>
+</div>
+<div class="input-area">
+<input id="userInput" onkeydown="if(event.key==='Enter') sendMessage()" placeholder="Ask anything about Strands products..." type="text"/>
+<button class="send-btn" onclick="sendMessage()">
+<svg viewbox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"></path></svg>
+</button>
+</div>
+</div>
+<div class="footer">
+<div class="footer-left">Content from <a href="https://strandseurope.com" target="_blank">strandseurope.com</a></div>
+<div class="footer-right">© Strands Group AB</div>
+</div>
+</div>
+<script>
+// ── CATEGORY TABS ─────────────────────────────────────────────────────────────
+const categoryQuestions = {
+  all: ['What light technology types exist?','What is lumen and lux?','What are ECE regulations?','How long is the warranty?','How do I track my order?','Do I need a CAN bus interface?','What is IP rating?','How do I contact support?'],
+  tech: ['What light technology types exist?','What is lumen and lux?','What is Kelvin?','What are beam patterns?','What are ECE regulations?','What is IP rating?','What amp rating do I need?'],
+  order: ['Is there a minimum order?','Can I change my order?','How long is delivery?','How do I track my order?','Do you offer express delivery?','I received the wrong product','Items missing from my order'],
+  warranty: ['How long is the warranty?','My product has broken','Does warranty cover modifications?','Can I cut the cable?','Can I cut the DT connector?','I want to return a product'],
+  canbus: ['Do I need a CAN bus interface?','Will XBB work with my new car?','Do I need resistors for LED taillights?','What happens after a software update?','Will high beam automatics work?'],
+  product: ['Which driving light should I choose?','What is No-Glare technology?','What is E-mode vs Xperience mode?','There is condensation in my light','Where can I find the manual?','Do you offer spare parts?'],
+  contact: ['How do I contact support?','How do I become a reseller?','What are your opening hours?']
+};
+
+function setCategory(cat, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const qs = categoryQuestions[cat] || categoryQuestions.all;
+  const sugg = document.getElementById('suggestions');
+  sugg.style.display = 'flex';
+  sugg.innerHTML = qs.map(q => `<button class="suggestion-btn" onclick="ask(this)">${q}</button>`).join('');
+}
+
+// ── FAQ KNOWLEDGE BASE ────────────────────────────────────────────────────────
+const FAQ = [{"cat": "product", "keywords": ["809434", "SIBERIA XP DRC LED BAR 50\""], "answer": "{\"SKU\": 809434, \"Description 2 (BC)\": \"Yellow / White Pos. | Hello Func. | Built-in Relay\", \"Description EN (BC)\": \"SIBERIA XP DRC LED BAR 50\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP DRC LEDRAMP 50\\"\", \"Actual lumen\": 28100.0, \"Consumption\": \"\", \"Consumption specific function\": \"X-mode 404W,E-mode 75W,White pos. 18.5W,Yellow pos. 18.5W\", \"Produktbeskrivning ENG (HTML)\": \"Welcome the new Siberia XP Double Row Curved LED bar. This 50” model has a long-distance beam pattern with 3425 actual lumens in E-mode and a massive 28100 actual lumens in Xperience mode. The result is a 50% higher output than previous LED bar models. A visual range of 366/714 meters guarantees high forward visibility, and the 5700-kelvin color temperature ensures crisp and clear output. The LED bar is easy to install with the 2500 mm cable and an integrated relay. It is incredibly durable and can withstand vibrations, rough roads, and hard use. The curved shape of the LED bar will follow the lines of your vehicle perfectly. With an IP rating of IP68/IP69K, it is protected against dirt and water that may ruin your product. The Xperience DRC is covered by Strands Lighting Divisions’ 3-year function warranty and is EMC-approved according to ECE R10.\", \"1 LUX @ m\": 714.0}"}, {"cat": "product", "keywords": ["809433", "SIBERIA XP DRC LED BAR 42\""], "answer": "{\"SKU\": 809433, \"Description 2 (BC)\": \"Yellow / White Pos. | Hello Func. | Built-in Relay\", \"Description EN (BC)\": \"SIBERIA XP DRC LED BAR 42\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP DRC LEDRAMP 42\\"\", \"Actual lumen\": 24800.0, \"Consumption\": \"\", \"Consumption specific function\": \"X-mode 334W,E-mode 65W,White pos. 17.5W,Yellow pos. 17.5W\", \"Produktbeskrivning ENG (HTML)\": \"Welcome the new Siberia XP Double Row Curved LED bar. This 42” model has an extended beam pattern with 3450 actual lumens in E-mode and 24800 in Xperience mode. This means a 55% higher output than previous models. A visual range of 342/688 meters creates high forward visibility, and the 5700-kelvin color temperature ensures a crisp and clear illumination. It is easy to install thanks to the 2500 mm cable and an integrated relay. It is incredibly durable and can withstand vibrations, rough roads, and hard use. Its curved shape will follow the lines of your vehicle perfectly. With an IP rating of IP68/IP69K, it is protected against dirt and water that may ruin the light. The Xperience DRC is covered by Strands Lighting Divisions’ 3-year function warranty and is EMC-approved according to ECE R10.\", \"1 LUX @ m\": 688.0}"}, {"cat": "product", "keywords": ["809432", "SIBERIA XP DRC LED BAR 32\""], "answer": "{\"SKU\": 809432, \"Description 2 (BC)\": \"Yellow / White Pos. | Hello Func. | Built-in Relay\", \"Description EN (BC)\": \"SIBERIA XP DRC LED BAR 32\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP DRC LEDRAMP 32\\"\", \"Actual lumen\": 18590.0, \"Consumption\": \"\", \"Consumption specific function\": \"X-mode 242W,E-mode 55W,White pos. 18W,Yellow pos. 18W\", \"Produktbeskrivning ENG (HTML)\": \"Welcome the new Siberia XP Double Row Curved LED bar. This 32” model has an extended beam pattern with 3500 actual lumens in E-mode and 18590 in Xperience mode. This means a 45% higher output than previous models. A visual range of 358-610 meters creates high forward visibility, and the 5700-kelvin color temperature ensures a crisp and clear illumination. It is easy to install thanks to the 2500 mm cable and an integrated relay. It is incredibly durable and can withstand vibrations, rough roads, and hard use. Its curved shape will follow the lines of your vehicle perfectly. With an IP rating of IP68/IP69K, it is protected against dirt and water that may ruin the light. The Xperience DRC is covered by Strands Lighting Divisions’ 3-year function warranty and is EMC-approved according to ECE R10.\", \"1 LUX @ m\": 610.0}"}, {"cat": "product", "keywords": ["809431", "SIBERIA XP DRC LED BAR 22\""], "answer": "{\"SKU\": 809431, \"Description 2 (BC)\": \"Yellow / White Pos. | Hello Func. | Built-in Relay\", \"Description EN (BC)\": \"SIBERIA XP DRC LED BAR 22\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP DRC LEDRAMP 22\\"\", \"Actual lumen\": 13030.0, \"Consumption\": \"\", \"Consumption specific function\": \"X-mode 184W,E-mode 45W,White pos. 17.5W,Yellow pos. 17W\", \"Produktbeskrivning ENG (HTML)\": \"Welcome the new Siberia XP Double Row Curved LED bar. This 22” model has an extended beam pattern with 3100 actual lumens in E-mode and 13030 in Xperience mode. This means a 100% higher output than previous models. A visual range of 322/616 meters creates high forward visibility, and the 5700-kelvin color temperature ensures a crisp and clear illumination. It's easy to install with the 2500 mm cable and integrated relay. It's highly durable, capable of withstanding vibrations, rough roads, and hard use, and its curved shape perfectly follows the lines of your vehicle. With an IP rating of IP68/IP69K and a strong powder coating, it is protected against dirt and water that may ruin the light. The Xperience DRC is covered by Strands Lighting Divisions’ 3-year function warranty and is EMC-approved according to ECE R10.\", \"1 LUX @ m\": 616.0}"}, {"cat": "product", "keywords": ["809416", "SIBERIA XP SRC LED BAR 22\""], "answer": "{\"SKU\": 809416, \"Description 2 (BC)\": \"Yellow / White Pos. | Hello Func. | Built-in Relay\", \"Description EN (BC)\": \"SIBERIA XP SRC LED BAR 22\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP SRC LEDRAMP 22\\"\", \"Actual lumen\": 7050.0, \"Consumption\": 110.0, \"Consumption specific function\": \"X-mode 107W,E-mode 45W,White pos. 9.5W,Yellow pos. 9.5W\", \"Produktbeskrivning ENG (HTML)\": \"Welcome the new Siberia XP Single Row Curved LED bar. This 22” model has an extended beam pattern with 3175 actual lumens in E-mode and 7050 in Xperience mode. This results in a 55% higher output than previous models. A visual range of 387-467 meters creates high forward visibility, and the 5700-kelvin color temperature ensures a crisp and clear illumination. The Siberia XP is easy to install thanks to the 2500 mm cable and built-in relay. It is incredibly durable and can withstand vibrations, rough roads, and hard use. It has an IP rating of IP68/IP69K, which ensures high protection against dirt and water. Siberia XP SRC is covered by Strands Lighting Divisions’ 3-year function warranty and is EMC-approved according to ECE R10.\", \"1 LUX @ m\": 467.0}"}, {"cat": "product", "keywords": ["809418", "SIBERIA XP SRC LED BAR 42\""], "answer": "{\"SKU\": 809418, \"Description 2 (BC)\": \"Yellow / White Pos. | Hello Func. | Built-in Relay\", \"Description EN (BC)\": \"SIBERIA XP SRC LED BAR 42\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP SRC LEDRAMP 42\\"\", \"Actual lumen\": 13700.0, \"Consumption\": \"\", \"Consumption specific function\": \"X-mode 234W,E-mode 70W,White pos. 19W,Yellow pos. 19W\", \"Produktbeskrivning ENG (HTML)\": \"Welcome the new Siberia XP Single Row Curved LED bar. This 42” model has an extended beam pattern with 4175 actual lumens in E-mode and 13700 in Xperience mode. This means a 44% higher output than previous LED bars. A visual range of 361/530 meters creates high forward visibility, and the 5700-kelvin color temperature ensures impeccable illumination. It is incredibly sturdy and long-lived and can withstand vibrations, rough roads, and hard use. It has an IP rating of IP68/IP69K, which ensures high protection against dirt and water. Siberia XP SRC is covered by Strands Lighting Divisions’ 3-year function warranty and is EMC-approved according to ECE R10. The Siberia XP is easy to install thanks to the 2500 mm cable and integrated relay.\", \"1 LUX @ m\": 530.0}"}, {"cat": "product", "keywords": ["809417", "SIBERIA XP SRC LED BAR 32\""], "answer": "{\"SKU\": 809417, \"Description 2 (BC)\": \"Yellow / White Pos. | Hello Func. | Built-in Relay\", \"Description EN (BC)\": \"SIBERIA XP SRC LED BAR 32\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP SRC LEDRAMP 32\\"\", \"Actual lumen\": 10600.0, \"Consumption\": 165.0, \"Consumption specific function\": \"X-mode 164W,E-mode 55W,White pos. 14.5W,Yellow pos. 14.5W\", \"Produktbeskrivning ENG (HTML)\": \"Welcome the new Siberia XP Single Row Curved LED bar. This 32” model has an extended beam pattern with 3600 actual lumens in E-mode and 10600 in Xperience mode. This means a 30% higher output than previous models. A visual range of 333-478 meters creates high forward visibility, and the color temperature of 5700 kelvin ensures bright and precise illumination. The Siberia XP is easy to install thanks to the 2500 mm cable and integrated relay. It is incredibly durable, vibration-resistant, and can withstand rough roads and rugged use. It has an IP rating of IP68/IP69K, which ensures high protection against dirt and water. Siberia XP SRC is covered by Strands Lighting Divisions’ 3-year function warranty and is EMC-approved according to ECE R10.\", \"1 LUX @ m\": 478.0}"}, {"cat": "product", "keywords": ["809419", "SIBERIA XP SRC LED BAR 50\""], "answer": "{\"SKU\": 809419, \"Description 2 (BC)\": \"Yellow / White Pos. | Hello Func. | Built-in Relay\", \"Description EN (BC)\": \"SIBERIA XP SRC LED BAR 50\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP SRC LEDRAMP 50\\"\", \"Actual lumen\": 15600.0, \"Consumption\": 235.0, \"Consumption specific function\": \"X-mode 235W,E-mode 80W,White pos. 23.5W,Yellow pos. 23.5W\", \"Produktbeskrivning ENG (HTML)\": \"Welcome the new Siberia XP Single Row Curved LED bar. This 50” model has an extended beam pattern with 4275 actual lumens in E-mode and 15600 in Xperience mode. This means a 40% higher output than previous models. A visual range of 355/513 meters creates high forward visibility, and the 5700-kelvin color temperature ensures a crisp and clear illumination. The Siberia XP is easy to install thanks to the 2500 mm cable and integrated relay. It is incredibly durable and can withstand vibrations, rough roads, and hard use. It has an IP rating of IP68/IP69K, which ensures high protection against dirt and water. Siberia XP SRC is covered by Strands Lighting Divisions’ 3-year function warranty and is EMC-approved according to ECE R10.\", \"1 LUX @ m\": 513.0}"}, {"cat": "product", "keywords": ["270965", "SIBERIA X LENS COVER CLEAR FLOOD 9\""], "answer": "{\"SKU\": 270965, \"Description 2 (BC)\": \"Stone chip cover | Clear\", \"Description EN (BC)\": \"SIBERIA X LENS COVER CLEAR FLOOD 9\\"\", \"Not in use Description SE (BC)\": \"SIBERIA X LINSSKYDD KLART FLOOD 9\\"\", \"Actual lumen\": \"\", \"Consumption\": \"\", \"Consumption specific function\": \"\", \"Produktbeskrivning ENG (HTML)\": \"To further customize your Siberia X, you can choose between different lens covers to suit your adventure. Just click the cover into place, and you’re ready to go. The clear flood cover increases output to the sides of the vehicle and fits Siberia X 9” (Part No. 270961). With this lens cover you’ll get an output of 1350 actual lumens with 260 meter range in E-mode, and 12170 actual lumens with 663 meter range in Xperience mode.\", \"1 LUX @ m\": 663.0}"}, {"cat": "product", "keywords": ["270963", "SIBERIA X LENS COVER CLEAR FLOOD 7\""], "answer": "{\"SKU\": 270963, \"Description 2 (BC)\": \"Stone chip cover | Clear\", \"Description EN (BC)\": \"SIBERIA X LENS COVER CLEAR FLOOD 7\\"\", \"Not in use Description SE (BC)\": \"SIBERIA X LINSSKYDD KLART FLOOD 7\\"\", \"Actual lumen\": \"\", \"Consumption\": \"\", \"Consumption specific function\": \"\", \"Produktbeskrivning ENG (HTML)\": \"To further customize your Siberia X, you can choose between different lens covers to suit your adventure. Just click the cover into place, and you’re ready to go. The clear flood cover increases output to the sides of the vehicle and fits Siberia X 7” (Part No. 270960). With this lens cover you’ll get an output of 1500 actual lumens with 257 meter range in E-mode, and 6820 actual lumens with 500 meter range in Xperience mode.\", \"1 LUX @ m\": 500.0}"}, {"cat": "product", "keywords": ["809265", "SIBERIA XP HEAT WORK LIGHT 70W"], "answer": "{\"SKU\": 809265, \"Description 2 (BC)\": \"Red / Amber Pos. | Heated Lens\", \"Description EN (BC)\": \"SIBERIA XP HEAT WORK LIGHT 70W\", \"Not in use Description SE (BC)\": \"SIBERIA XP HEAT ARBETSLJUS 70W\", \"Actual lumen\": 3710.0, \"Consumption\": 70.0, \"Consumption specific function\": \"Work 70W,Red pos. 1.5W,Amber pos. 2W,Heating 25W\", \"Produktbeskrivning ENG (HTML)\": \"XPERIENCE HEAT: never let ice-covered lights slow you down again. The robust and heavy-duty Siberia XP Heat has a heated lens, keeping it free from ice in cold and wet weather. A massive output of 3710 actual lumens and a 68-meter range offer maximum visibility in any storm. The automatic heating function connects with a separate cable and activates when the temperature reaches or falls below 5°C to keep the lens ice-free. An IP rating of IP68/IP69K, a solid aluminum housing, and a tempered glass lens guarantee lasting quality. Its sturdy, vibration-resistant build is designed for heavy-duty use and is a perfect fit for trucks and other heavy vehicles. It has red and amber position lights that can be connected to the heating function or the indicator lights. Installation is easy thanks to a 2000 mm cable. It can be installed using a frame for surface mounting (Part No. 809264).\", \"1 LUX @ m\": 68.0}"}, {"cat": "product", "keywords": ["270992", "SIBERIA XP DRIVING LIGHT 9\""], "answer": "{\"SKU\": 270992, \"Description 2 (BC)\": \"White / Yellow Pos. | Hello Func. | DT-4Pin\", \"Description EN (BC)\": \"SIBERIA XP DRIVING LIGHT 9\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP EXTRALJUS 9\\"\", \"Actual lumen\": 15030.0, \"Consumption\": 145.0, \"Consumption specific function\": \"X-mode 144W,E-mode 31W,White pos. 5.5W,Yellow pos. 5.5W\", \"Produktbeskrivning ENG (HTML)\": \"With its 3080/15030 incredible actual lumens, the Siberia XP 9” will light up the darkest night and most challenging roads. This updated driving light has a long-distance beam pattern with E-mode and Xperience-mode. This results in a range of 330/711 meters, ensuring very high forward visibility. Choose between two lens covers for a perfectly customized output: dark and yellow. The XP 9” also features a new yellow and white position light and Hello function. Its durable materials and new powder coating make it a long-lived addition to any vehicle, with an IP rating of IP68/IP69K. Enjoy an effortless installation thanks to the DT-4 connector and 150 mm cable, saving you the hassle of connecting cables. It is E-approved ECE R149(R112), R148(R7), and EMC certified ECE R10.\", \"1 LUX @ m\": 711.0}"}, {"cat": "product", "keywords": ["270985", "SIBERIA XP DRIVING LIGHT 7\""], "answer": "{\"SKU\": 270985, \"Description 2 (BC)\": \"White / Yellow Pos. | Hello Func. | DT-4Pin\", \"Description EN (BC)\": \"SIBERIA XP DRIVING LIGHT 7\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP EXTRALJUS 7\\"\", \"Actual lumen\": 5710.0, \"Consumption\": 77.0, \"Consumption specific function\": \"X-mode 77W,E-mode 22W,White pos. 5.5W,Yellow pos. 5.5W\", \"Produktbeskrivning ENG (HTML)\": \"With its 1540/5710 incredible actual lumens, the Siberia XP 7” will light up the darkest night and most challenging roads. This updated driving light has an extended beam pattern with E-mode and Xperience-mode. This results in a range of 342/662 meters, ensuring high forward visibility. The XP 7” also features a new yellow and white position light and Hello function. Its durable materials and new powder coating make it a long-lived addition to any vehicle, with an IP rating of IP68/IP69K. Enjoy an effortless installation thanks to the DT-4 connector and 150 mm cable, saving you the hassle of connecting cables. It is E-approved ECE R149(R112), R148(R7), and EMC certified ECE R10.\", \"1 LUX @ m\": 660.0}"}, {"cat": "product", "keywords": ["850122", "LWL-11 DIRECTIONAL WARNING LIGHT"], "answer": "{\"SKU\": 850122, \"Description 2 (BC)\": \"10-32V | 21 Patterns | 1M Cable\", \"Description EN (BC)\": \"LWL-11 DIRECTIONAL WARNING LIGHT\", \"Not in use Description SE (BC)\": \"LWL-11 RIKTAT BLIXTLJUS\", \"Actual lumen\": \"\", \"Consumption\": 4.0, \"Consumption specific function\": \"\", \"Produktbeskrivning ENG (HTML)\": \"\", \"1 LUX @ m\": \"\"}"}, {"cat": "product", "keywords": ["809289", "NUUK D-LINE MC WORK LIGHT 39W"], "answer": "{\"SKU\": 809289, \"Description 2 (BC)\": \"Red / Amber Pos. | DT-4Pin\", \"Description EN (BC)\": \"NUUK D-LINE MC WORK LIGHT 39W\", \"Not in use Description SE (BC)\": \"NUUK D-LINE MC ARBETSLJUS 39W\", \"Actual lumen\": 2740.0, \"Consumption\": 39.0, \"Consumption specific function\": \"Work 39W,Red pos. 3W,Amber pos.4W\", \"Produktbeskrivning ENG (HTML)\": \"Experience hardcore quality for any workspace. With 2740 actual lumens, 5700 K, and a 65 m range, it illuminates any workspace safely and efficiently. The stylish MC work light has an updated round design and will fit anywhere. Built to endure, its high-quality materials and IP68/69K rating make it perfect for use in any environment. From the feel of the materials to the bright and wide beam, every detail of the MC reflects quality built to last. Thanks to the updated rounded shape, water is quickly led away from the lens to keep the output crisp. Installation is quick and simple with a 180° adjustable bracket and a 150 mm cable with a DT-4 connector, giving you flexibility and control. The amber and red position light adds an eye-catching style and glow.\", \"1 LUX @ m\": 65.0}"}, {"cat": "product", "keywords": ["809288", "NUUK D-LINE MC DRIVING LIGHT 3\""], "answer": "{\"SKU\": 809288, \"Description 2 (BC)\": \"White / Yellow Pos. | Round\", \"Description EN (BC)\": \"NUUK D-LINE MC DRIVING LIGHT 3\\"\", \"Not in use Description SE (BC)\": \"NUUK D-LINE MC EXTRALJUS 3\\"\", \"Actual lumen\": 2540.0, \"Consumption\": 39.0, \"Consumption specific function\": \"Driving 39W,White pos. 3W,Yellow pos. 3.5W\", \"Produktbeskrivning ENG (HTML)\": \"The Nuuk D-Line MC 3\\" driving light will fit anywhere and is E-approved R149/R148 for motorcycles with reference number 12,5, ready to embrace the adventure. With 2540 actual lumens, 5700 K, and a 276 m range, the optimized beam is a big boost to your standard MC high beam. Built to endure any task, its high-quality materials and IP68/69K rating make it a top choice for demanding off-road challenges. From the rounded lens to the bright beam, every detail of the MC reflects hardcore quality built to last. Choose between white and yellow position lights to add a unique style and glow. Installation is quick and simple with a 180° adjustable bracket and a 150 mm cable with a DT-4 connector, giving you flexibility and control.\", \"1 LUX @ m\": 276.0}"}, {"cat": "product", "keywords": ["809287", "NUUK D-LINE QB WORK LIGHT 39W"], "answer": "{\"SKU\": 809287, \"Description 2 (BC)\": \"Red / Amber Pos. | DT-4Pin\", \"Description EN (BC)\": \"NUUK D-LINE QB WORK LIGHT 39W\", \"Not in use Description SE (BC)\": \"NUUK D-LINE QB ARBETSLJUS 39W\", \"Actual lumen\": 2920.0, \"Consumption\": 39.0, \"Consumption specific function\": \"Work 39W,Red pos. 3W,Amber pos.4W\", \"Produktbeskrivning ENG (HTML)\": \"The Nuuk D-Line Qube 3\\" work light is made for professional use, with 2920 actual lumens, 5700 K color temperature, and a 59 m range. Built to endure, its high-quality materials and IP68/69K rating make it ready for demanding jobs in difficult environments. Its rounded shape keeps the water away from the lens to clear the light, and the amber and red position light adds an eye-catching style and glow. From the feel of the materials to the bright and wide beam, every detail of the Qube reflects hardcore quality built to last. Installation is quick and simple with a 180° adjustable bracket and a 150 mm cable with a DT-4 connector, giving you flexibility and control. Its compact size ensures a perfect fit anywhere and for any vehicle, such as on the steps of your truck.\", \"1 LUX @ m\": 59.0}"}, {"cat": "product", "keywords": ["809286", "NUUK D-LINE QB DRIVING LIGHT 3\""], "answer": "{\"SKU\": 809286, \"Description 2 (BC)\": \"White / Yellow Pos. | Square\", \"Description EN (BC)\": \"NUUK D-LINE QB DRIVING LIGHT 3\\"\", \"Not in use Description SE (BC)\": \"NUUK D-LINE QB EXTRALJUS 3\\"\", \"Actual lumen\": 2710.0, \"Consumption\": 41.0, \"Consumption specific function\": \"Driving 41W,White pos. 3W,Yellow pos. 3.5W\", \"Produktbeskrivning ENG (HTML)\": \"The Qube 3\\" driving light is a small driving light with an impressive range and a unique design, perfect for 4x4s, ATVs, UTVs, and MCs. With 2710 actual lumens, 5700 K color temperature, and a 240 m range, it cuts through the dark with ease. The rounded lens delivers an exceptional output and leads water away from the lens in rainy weather. Built to endure, its high-quality materials and IP68/69K rating make it ready for demanding off-road challenges. From the feel of the materials to the bright and focused beam, every detail of the Qube reflects quality built to last. Installation is quick and simple with a 180° adjustable bracket and a 150 mm cable with a DT-4 connector, giving you flexibility and control. The white and yellow position light adds an eye-catching style and glow to any vehicle.\", \"1 LUX @ m\": 240.0}"}];
+
+// ── MATCHING ENGINE ───────────────────────────────────────────────────────────
+function findAnswer(query) {
+  const q = query.toLowerCase();
+  let bestMatch = null;
+  let bestScore = 0;
+
+  for (const faq of FAQ) {
+    let score = 0;
+    for (const kw of faq.keywords) {
+      if (q.includes(kw.toLowerCase())) {
+        score += kw.split(' ').length;
+      }
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = faq;
+    }
+  }
+
+  if (bestScore > 0) return bestMatch.answer;
+
+  return `I'm not sure about that specific question. Here are ways to get help:\n\n📧 <a href="mailto:support@strands.se">support@strands.se</a>\n📞 +46(0)320-450450\n🔗 <a href="https://strandseurope.com" target="_blank">strandseurope.com →</a>\n\nTry rephrasing — I cover: light technology, ECE regulations, IP ratings, orders, delivery, warranty, CAN bus/XBB, and product questions.`;
+}
+
+// ── CHAT UI ───────────────────────────────────────────────────────────────────
+function addMessage(role, html) {
+  const messages = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = `message ${role}`;
+  div.innerHTML = `
+    <div class="avatar ${role}-avatar">${role === 'bot' ? 'STR' : 'You'}</div>
+    <div class="bubble">${html.replace(/\n/g, '<br>')}</div>
+  `;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function showTyping() {
+  const messages = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = 'message bot'; div.id = 'typing';
+  div.innerHTML = `<div class="avatar bot-avatar">STR</div><div class="bubble"><div class="dots"><span></span><span></span><span></span></div></div>`;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing');
+  if (t) t.remove();
+}
+
+function ask(btn) {
+  document.getElementById('userInput').value = btn.textContent;
+  sendMessage();
+}
+
+function sendMessage() {
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text) return;
+  document.getElementById('suggestions').style.display = 'none';
+  addMessage('user', text);
+  input.value = '';
+  showTyping();
+  setTimeout(() => {
+    removeTyping();
+    addMessage('bot', findAnswer(text));
+  }, 500 + Math.random() * 300);
+}
+
+window.onload = () => {
+  setTimeout(() => {
+    addMessage('bot', `Hi! 👋 I'm the Strands FAQ assistant. I can help you with:\n\n• Light technology (lumen, lux, Kelvin, ECE, IP rating)\n• Orders, delivery & returns\n• Warranty & claims\n• CAN bus & XBB installation\n• Product questions\n\nUse the tabs above to browse by topic, or just ask me anything!`);
+  }, 400);
+};
+</script>
+</body>
+</html>
