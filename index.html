@@ -1,25 +1,26 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Strands — FAQ Assistant</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&amp;family=Inter:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #f0f4f8;
-    --surface: #ffffff;
-    --border: #dde3ea;
-    --accent: #1a56db;
-    --accent-dark: #1340b0;
-    --accent-light: #ebf0fd;
-    --text: #111827;
-    --muted: #6b7280;
-    --bot-bg: #f8fafc;
-    --user-bg: #1a56db;
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #2a2a2a;
+    --accent: #f5c800;
+    --accent-dark: #d4a800;
+    --accent-glow: rgba(245,200,0,0.15);
+    --text: #f0f0f0;
+    --muted: #888;
+    --bot-bg: #161616;
+    --user-bg: #f5c800;
   }
 
   body {
@@ -30,28 +31,39 @@
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     padding: 20px;
-    background-image: radial-gradient(circle at 85% 15%, rgba(26,86,219,0.07) 0%, transparent 50%),
-                      radial-gradient(circle at 10% 85%, rgba(26,86,219,0.04) 0%, transparent 40%);
+    background-image:
+      radial-gradient(circle at 85% 10%, rgba(245,200,0,0.05) 0%, transparent 45%),
+      radial-gradient(circle at 10% 90%, rgba(245,200,0,0.03) 0%, transparent 40%);
   }
 
-  .wrapper { width: 100%; max-width: 720px; }
+  .wrapper { width: 100%; max-width: 740px; }
 
   .header {
-    display: flex; align-items: center; gap: 16px;
-    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 18px;
+    margin-bottom: 22px;
     animation: fadeDown 0.5s ease both;
   }
 
   .logo-mark {
-    width: 48px; height: 48px; background: var(--accent);
-    border-radius: 12px; display: flex; align-items: center; justify-content: center;
-    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: white;
-    flex-shrink: 0; box-shadow: 0 4px 14px rgba(26,86,219,0.3);
-    letter-spacing: -0.5px;
+    width: 56px; height: 56px;
+    background: #000;
+    border: 2px solid var(--accent);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 12px;
+    color: var(--accent);
+    flex-shrink: 0;
+    box-shadow: 0 0 20px rgba(245,200,0,0.25), 0 4px 14px rgba(0,0,0,0.5);
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    text-align: center;
   }
 
-  .header-text h1 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: var(--text); }
-  .header-text p { font-size: 13px; color: var(--muted); margin-top: 2px; font-weight: 300; }
+  .header-text h1 {
+    font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800;
+    color: var(--accent); letter-spacing: 0.3px;
+  }
+  .header-text p { font-size: 13px; color: var(--muted); margin-top: 3px; font-weight: 300; }
 
   .status-dot {
     width: 7px; height: 7px; background: #22c55e; border-radius: 50%;
@@ -59,9 +71,10 @@
   }
 
   .chat-box {
-    background: var(--surface); border: 1px solid var(--border);
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 20px; overflow: hidden;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 8px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(245,200,0,0.05);
     animation: fadeUp 0.6s ease both 0.1s;
   }
 
@@ -73,7 +86,7 @@
   }
 
   .messages::-webkit-scrollbar { width: 4px; }
-  .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  .messages::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 4px; }
 
   .message { display: flex; gap: 10px; animation: msgIn 0.3s ease both; }
   .message.user { flex-direction: row-reverse; }
@@ -81,15 +94,16 @@
   .avatar {
     width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
-    font-size: 10px; font-weight: 700; font-family: 'Syne', sans-serif;
+    font-size: 9px; font-weight: 800; font-family: 'Syne', sans-serif;
+    line-height: 1.1; text-align: center;
   }
 
-  .bot-avatar { background: var(--accent); color: white; box-shadow: 0 2px 8px rgba(26,86,219,0.25); }
-  .user-avatar { background: #e5e7eb; color: var(--muted); }
+  .bot-avatar { background: #000; border: 1.5px solid var(--accent); color: var(--accent); box-shadow: 0 0 10px rgba(245,200,0,0.2); }
+  .user-avatar { background: #1e1e1e; border: 1px solid #333; color: var(--muted); }
 
   .bubble {
-    max-width: 80%; padding: 12px 16px; border-radius: 14px;
-    font-size: 14px; line-height: 1.7;
+    max-width: 82%; padding: 12px 16px; border-radius: 14px;
+    font-size: 14px; line-height: 1.75;
   }
 
   .bot .bubble {
@@ -97,9 +111,22 @@
     border-top-left-radius: 4px; color: var(--text);
   }
 
-  .user .bubble { background: var(--user-bg); border-top-right-radius: 4px; color: white; }
+  .user .bubble {
+    background: var(--user-bg);
+    border-top-right-radius: 4px; color: #000; font-weight: 500;
+  }
+
   .bubble a { color: var(--accent); text-decoration: underline; }
-  .user .bubble a { color: #c7d9ff; }
+  .user .bubble a { color: #000; }
+
+  .download-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(245,200,0,0.1); border: 1px solid rgba(245,200,0,0.3);
+    color: var(--accent); padding: 7px 14px; border-radius: 8px;
+    font-size: 12.5px; font-weight: 500; cursor: pointer;
+    margin-top: 10px; transition: all 0.2s; text-decoration: none;
+  }
+  .download-btn:hover { background: rgba(245,200,0,0.2); transform: translateY(-1px); }
 
   .dots { display: flex; gap: 4px; align-items: center; padding: 4px 2px; }
   .dots span {
@@ -110,65 +137,66 @@
   .dots span:nth-child(3) { animation-delay: 0.4s; }
 
   .tabs {
-    display: flex; gap: 6px; padding: 14px 22px 0;
+    display: flex; gap: 4px; padding: 14px 18px 0;
     border-bottom: 1px solid var(--border);
     overflow-x: auto; scrollbar-width: none;
   }
   .tabs::-webkit-scrollbar { display: none; }
 
   .tab-btn {
-    background: none; border: none; padding: 7px 14px;
-    font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 500;
+    background: none; border: none; padding: 7px 13px;
+    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 500;
     color: var(--muted); cursor: pointer; border-radius: 8px 8px 0 0;
     white-space: nowrap; transition: all 0.2s;
     border-bottom: 2px solid transparent; margin-bottom: -1px;
   }
 
-  .tab-btn:hover { color: var(--accent); background: var(--accent-light); }
-  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--accent-light); }
+  .tab-btn:hover { color: var(--accent); background: var(--accent-glow); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--accent-glow); }
 
   .suggestions {
-    padding: 12px 22px 14px;
+    padding: 12px 20px 14px;
     display: flex; flex-wrap: wrap; gap: 7px;
   }
 
   .suggestion-btn {
-    background: var(--accent-light); border: 1px solid rgba(26,86,219,0.2);
-    color: var(--accent-dark); font-family: 'Inter', sans-serif;
-    font-size: 12.5px; padding: 6px 13px; border-radius: 20px;
+    background: #1a1a1a; border: 1px solid #2a2a2a;
+    color: #ccc; font-family: 'Inter', sans-serif;
+    font-size: 12px; padding: 6px 13px; border-radius: 20px;
     cursor: pointer; transition: all 0.2s ease;
   }
 
   .suggestion-btn:hover {
-    background: var(--accent); color: white; border-color: var(--accent);
-    transform: translateY(-1px); box-shadow: 0 3px 10px rgba(26,86,219,0.25);
+    background: var(--accent-glow); color: var(--accent);
+    border-color: rgba(245,200,0,0.4);
+    transform: translateY(-1px);
   }
 
   .input-area {
     display: flex; align-items: center; gap: 10px;
-    padding: 14px 18px; border-top: 1px solid var(--border); background: #fafbfc;
+    padding: 14px 18px; border-top: 1px solid var(--border); background: var(--surface2);
   }
 
   .input-area input {
-    flex: 1; background: var(--surface); border: 1px solid var(--border);
+    flex: 1; background: #0f0f0f; border: 1px solid var(--border);
     border-radius: 10px; padding: 10px 14px; outline: none;
     color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px;
     transition: border-color 0.2s;
   }
 
-  .input-area input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,86,219,0.1); }
-  .input-area input::placeholder { color: #bbb; }
+  .input-area input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(245,200,0,0.08); }
+  .input-area input::placeholder { color: #444; }
 
   .send-btn {
     width: 40px; height: 40px; border-radius: 10px;
     background: var(--accent); border: none; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     transition: all 0.2s; flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(26,86,219,0.3);
+    box-shadow: 0 2px 12px rgba(245,200,0,0.3);
   }
 
   .send-btn:hover { background: var(--accent-dark); transform: translateY(-1px); }
-  .send-btn svg { width: 16px; height: 16px; fill: white; }
+  .send-btn svg { width: 16px; height: 16px; fill: #000; }
 
   .footer {
     display: flex; justify-content: space-between; align-items: center;
@@ -177,7 +205,15 @@
 
   .footer-left { font-size: 12px; color: var(--muted); }
   .footer-left a { color: var(--accent); text-decoration: none; font-weight: 500; }
-  .footer-right { font-size: 12px; color: #bbb; }
+  .footer-right { font-size: 12px; color: #333; }
+
+  .export-banner {
+    background: rgba(245,200,0,0.06); border: 1px solid rgba(245,200,0,0.2);
+    border-radius: 10px; padding: 10px 14px; margin-top: 10px;
+    font-size: 12.5px; color: #ccc; display: flex; align-items: center; gap: 10px;
+    animation: fadeUp 0.4s ease both;
+  }
+  .export-banner .export-label { color: var(--accent); font-weight: 600; }
 
   @keyframes fadeDown { from { opacity:0; transform:translateY(-14px); } to { opacity:1; transform:translateY(0); } }
   @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
@@ -188,55 +224,142 @@
 </head>
 <body>
 <div class="wrapper">
-<div class="header">
-<div class="logo-mark">STR<br/>ANDS</div>
-<div class="header-text">
-<h1>Strands Support</h1>
-<p><span class="status-dot"></span>FAQ Assistant · Always available · No login needed</p>
+  <div class="header">
+    <div class="logo-mark">STR<br>AND</div>
+    <div class="header-text">
+      <h1>STRAND Support</h1>
+      <p><span class="status-dot"></span>FAQ + Product Assistant · Always available · No login needed</p>
+    </div>
+  </div>
+
+  <div class="chat-box">
+    <div class="tabs" id="tabs">
+      <button class="tab-btn active" onclick="setCategory('all', this)">All Topics</button>
+      <button class="tab-btn" onclick="setCategory('product', this)">Products</button>
+      <button class="tab-btn" onclick="setCategory('tech', this)">Tech & Facts</button>
+      <button class="tab-btn" onclick="setCategory('order', this)">Orders</button>
+      <button class="tab-btn" onclick="setCategory('warranty', this)">Warranty</button>
+      <button class="tab-btn" onclick="setCategory('canbus', this)">CAN bus & XBB</button>
+      <button class="tab-btn" onclick="setCategory('contact', this)">Contact</button>
+    </div>
+
+    <div class="messages" id="messages"></div>
+
+    <div class="suggestions" id="suggestions">
+      <button class="suggestion-btn" onclick="ask(this)">Tell me about 809456</button>
+      <button class="suggestion-btn" onclick="ask(this)">What is lumen and lux?</button>
+      <button class="suggestion-btn" onclick="ask(this)">Do I need a CAN bus interface?</button>
+      <button class="suggestion-btn" onclick="ask(this)">How long is the warranty?</button>
+      <button class="suggestion-btn" onclick="ask(this)">What is IP rating?</button>
+      <button class="suggestion-btn" onclick="ask(this)">How do I contact support?</button>
+    </div>
+
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Ask about products, SKUs, tech, orders..." onkeydown="if(event.key==='Enter') sendMessage()" />
+      <button class="send-btn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-left">Powered by <a href="https://strandseurope.com" target="_blank">strandseurope.com</a></div>
+    <div class="footer-right">© Strands Group AB</div>
+  </div>
 </div>
-</div>
-<div class="chat-box">
-<div class="tabs" id="tabs">
-<button class="tab-btn active" onclick="setCategory('all', this)">All Topics</button>
-<button class="tab-btn" onclick="setCategory('tech', this)">Tech &amp; Facts</button>
-<button class="tab-btn" onclick="setCategory('order', this)">Orders &amp; Delivery</button>
-<button class="tab-btn" onclick="setCategory('warranty', this)">Warranty &amp; Returns</button>
-<button class="tab-btn" onclick="setCategory('canbus', this)">CAN bus &amp; XBB</button>
-<button class="tab-btn" onclick="setCategory('product', this)">Products</button>
-<button class="tab-btn" onclick="setCategory('contact', this)">Contact</button>
-</div>
-<div class="messages" id="messages"></div>
-<div class="suggestions" id="suggestions">
-<button class="suggestion-btn" onclick="ask(this)">What light technology types exist?</button>
-<button class="suggestion-btn" onclick="ask(this)">What is lumen and lux?</button>
-<button class="suggestion-btn" onclick="ask(this)">What are ECE regulations?</button>
-<button class="suggestion-btn" onclick="ask(this)">How long is the warranty?</button>
-<button class="suggestion-btn" onclick="ask(this)">How do I track my order?</button>
-<button class="suggestion-btn" onclick="ask(this)">Do I need a CAN bus interface?</button>
-<button class="suggestion-btn" onclick="ask(this)">What is IP rating?</button>
-<button class="suggestion-btn" onclick="ask(this)">How do I contact support?</button>
-</div>
-<div class="input-area">
-<input id="userInput" onkeydown="if(event.key==='Enter') sendMessage()" placeholder="Ask anything about Strands products..." type="text"/>
-<button class="send-btn" onclick="sendMessage()">
-<svg viewbox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"></path></svg>
-</button>
-</div>
-</div>
-<div class="footer">
-<div class="footer-left">Content from <a href="https://strandseurope.com" target="_blank">strandseurope.com</a></div>
-<div class="footer-right">© Strands Group AB</div>
-</div>
-</div>
+
 <script>
+// ── PRODUCT DATABASE (from Plytix Export) ────────────────────────────────────
+const PRODUCTS = [{"SKU":"809456XBB","Description 2 (BC)":"White / Amber Pos. | Built-in Relay | XBB Kit","Description EN (BC)":"NUUK D-LINE LPL LED BAR 20\" WITH XBB AND CABLE","Not in use Description SE (BC)":"NUUK D-LINE NUMMERSKYLT LEDRAMP 20\" MED XBB OCH KABEL"},{"SKU":"SLD2015","Description 2 (BC)":"35 - 43","Description EN (BC)":"STRANDS SNEAKERS"},{"SKU":"809456","Description 2 (BC)":"White / Amber Pos. | Built-in Relay | Holder incl.","Description EN (BC)":"NUUK D-LINE LPL LED BAR 20\"","Not in use Description SE (BC)":"NUUK D-LINE NUMMERSKYLT LEDRAMP 20\"","Actual lumen":"9000"},{"SKU":"80916","Description EN (BC)":"SIBERIA OUTLAW LED BAR"},{"SKU":"80917","Description EN (BC)":"SIBERIA SR LED BAR"},{"SKU":"900151","Not in use Description SE (BC)":"P/ FREEDOM Work light 15W"},{"SKU":"905103","Not in use Description SE (BC)":"P/ Duo function warning light"},{"SKU":"906033","Not in use Description SE (BC)":"P/ Scene Work light"},{"SKU":"906032","Not in use Description SE (BC)":"P/ Portable Work light  9W"},{"SKU":"906031","Not in use Description SE (BC)":"P/ Work light 12-80V 9W"},{"SKU":"MAKI18811021M","Description 2 (BC)":"Ford Transit Connect SR (nuuk)  m8","Description EN (BC)":"Installation manual","Not in use Description SE (BC)":"Installasjonsmanual"},{"SKU":"905010","Not in use Description SE (BC)":"P/ New beacon din pole flexi"},{"SKU":"905011","Not in use Description SE (BC)":"P/ New beacon din pole small"},{"SKU":"905008","Not in use Description SE (BC)":"P/ New beacon surface mount"},{"SKU":"907055","Description 2 (BC)":"Fits to Tesla 3/Y  2019-","Description EN (BC)":"STRANDS PRO ADAPTER FOR OBD2-PORT TESLA","Not in use Description SE (BC)":"STRANDS PRO ADAPTER TILL OBD2-PORT TESLA","Actual lumen":"10020","Consumption":"144","1 LUX @ m":"513"},{"SKU":"850251","Description 2 (BC)":"Male and female connector M12","Description EN (BC)":"2 METER CABLE","Not in use Description SE (BC)":"2 METER CABLE RRS","Actual lumen":"6560","1 LUX @ m":"509"},{"SKU":"903034","Not in use Description SE (BC)":"P/ FOR9T Curved silicon pad","Actual lumen":"11000","Consumption":"120","1 LUX @ m":"531"},{"SKU":"901036","Description 2 (BC)":"Fits 901035 | Clear | Stone chip cover","Description EN (BC)":"BIG ENERGY RAW LENS COVER CLEAR FLOOD 9″","Not in use Description SE (BC)":"BIG ENERGY RAW LINSSKYDD KLAR FLOOD 9\"","Actual lumen":"8600","Consumption":"110","1 LUX @ m":"769"},{"SKU":"901037","Description 2 (BC)":"Fits 901035 | Yellow | Stone chip cover","Description EN (BC)":"BIG ENERGY RAW LENS COVER YELLOW FLOOD 9″","Not in use Description SE (BC)":"BIG ENERGY RAW LINSSKYDD GUL FLOOD 9\"","Actual lumen":"12000"},{"SKU":"906012","Not in use Description SE (BC)":"P/ Thermal plastic rectangular work light"},{"SKU":"906011","Not in use Description SE (BC)":"P/ Thermal plastic sqaure work light"},{"SKU":"MAK52504614A","Description 2 (BC)":"Suitable KIA PV5","Description EN (BC)":"NUUK E-LINE BLACK LED BAR 20\"","Not in use Description SE (BC)":"NUUK E-LINE BLACK LED BAR 20\""},{"SKU":"809214A","Not in use Description SE (BC)":"SIBERIA NG SR LEDRAMP 38\""},{"SKU":"809213A","Not in use Description SE (BC)":"SIBERIA NG SR LEDRAMP 32\""},{"SKU":"809212A","Not in use Description SE (BC)":"SIBERIA NG SR LEDRAMP 20\"","Actual lumen":"13000","Consumption":"12"},{"SKU":"809217A","Description 2 (BC)":"Warning light | Optimized beam","Description EN (BC)":"SIBERIA NG DR LED BAR 22\"","Not in use Description SE (BC)":"SIBERIA NG DR LEDRAMP 22\""},{"SKU":"809216A","Description 2 (BC)":"Warning light | Optimized beam","Description EN (BC)":"SIBERIA NG DR LED BAR 12\"","Not in use Description SE (BC)":"SIBERIA NG DR LEDRAMP 12\""},{"SKU":"270945W","Not in use Description SE (BC)":"IZE LED OG EXTRALJUS 9\""},{"SKU":"907018","Not in use Description SE (BC)":"STRANDS PRO RELAY BOX FOR 4 PORTS 24V"},{"SKU":"MAKI18814421S","Not in use Description SE (BC)":"D-LINE 10\" 3D-PRINT FÄSTE"},{"SKU":"MAKI18812120S","Not in use Description SE (BC)":"DOBBELRADIG 8\" 3D-PRINT FÄSTE"},{"SKU":"MAKI18811621S","Not in use Description SE (BC)":"FIREFLY 10\" 3D-PRINT FÄSTE"},{"SKU":"MAKI18812021S","Description 2 (BC)":"Suitable Ford Transit Connect 2025-","Description EN (BC)":"SINGLE ROW 10\" 3D-PRINT MOUNT","Not in use Description SE (BC)":"ENKELRADIG M8 10\" 3D-PRINT FÄSTE"},{"SKU":"RRS5250344","Description 2 (BC)":"Suitable KIA PV5","Description EN (BC)":"Cruise Light C-Rack","Not in use Description SE (BC)":"Cruise Light C-Rack"},{"SKU":"RRS5250340","Description 2 (BC)":"Suitable KIA PV5","Description EN (BC)":"Cruise Light C-Rack","Not in use Description SE (BC)":"Cruise Light C-Rack"},{"SKU":"RRS5250244","Description 2 (BC)":"Suitable KIA PV5","Description EN (BC)":"Cruise Light C-Rack","Not in use Description SE (BC)":"Cruise Light C-Rack"},{"SKU":"RRS5250240","Description 2 (BC)":"Suitable KIA PV5","Description EN (BC)":"Cruise Light C-Rack","Not in use Description SE (BC)":"Cruise Light C-Rack"},{"SKU":"RRS5250200","Description 2 (BC)":"Suitable KIA PV5","Description EN (BC)":"Cruise Light C-Rack","Not in use Description SE (BC)":"Cruise Light C-Rack"},{"SKU":"RRS5250300","Description 2 (BC)":"Suitable KIA PV5","Description EN (BC)":"Cruise Light C-Rack","Not in use Description SE (BC)":"Cruise Light C-Rack"},{"SKU":"270494","Not in use Description SE (BC)":"P/CRUISE LIGHT DYNAMIC TAIL CONTROL"}];
+
+// ── UNANSWERED QUESTIONS LOG ──────────────────────────────────────────────────
+let unansweredLog = [];
+
+function logUnanswered(question) {
+  unansweredLog.push({ question, timestamp: new Date().toISOString() });
+}
+
+function exportUnansweredToExcel() {
+  if (unansweredLog.length === 0) {
+    addMessage('bot', '📋 No unanswered questions to export yet!');
+    return;
+  }
+  const ws = XLSX.utils.json_to_sheet(unansweredLog.map(r => ({
+    'Question': r.question,
+    'Timestamp': r.timestamp
+  })));
+  ws['!cols'] = [{ wch: 60 }, { wch: 25 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Unanswered Questions');
+  XLSX.writeFile(wb, 'strand_unanswered_questions.xlsx');
+}
+
+function exportProductsToExcel() {
+  const rows = PRODUCTS.map(p => ({
+    'SKU': p['SKU'] || '',
+    'Name (EN)': p['Description EN (BC)'] || '',
+    'Description': p['Description 2 (BC)'] || '',
+    'SE Description': p['Not in use Description SE (BC)'] || '',
+    'Actual Lumen': p['Actual lumen'] || '',
+    'Consumption (W)': p['Consumption'] || '',
+    '1 LUX @ m': p['1 LUX @ m'] || ''
+  }));
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = [{ wch: 18 }, { wch: 35 }, { wch: 40 }, { wch: 40 }, { wch: 14 }, { wch: 16 }, { wch: 12 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Strand Products');
+  XLSX.writeFile(wb, 'strand_products.xlsx');
+}
+
+// ── PRODUCT LOOKUP ────────────────────────────────────────────────────────────
+function findProduct(query) {
+  const q = query.toLowerCase().trim();
+  // Exact SKU match
+  let match = PRODUCTS.find(p => p.SKU && p.SKU.toLowerCase() === q);
+  if (match) return match;
+  // Partial SKU match
+  match = PRODUCTS.find(p => p.SKU && q.includes(p.SKU.toLowerCase()));
+  if (match) return match;
+  // Search across all text fields
+  match = PRODUCTS.find(p => {
+    const allText = Object.values(p).join(' ').toLowerCase();
+    return allText.includes(q) && q.length > 3;
+  });
+  return match || null;
+}
+
+function formatProductAnswer(p) {
+  const name = p['Description EN (BC)'] || p['Not in use Description SE (BC)'] || 'Unknown product';
+  const desc = p['Description 2 (BC)'];
+  const lumen = p['Actual lumen'];
+  const consumption = p['Consumption'];
+  const range = p['1 LUX @ m'];
+
+  let html = `📦 <strong>SKU: ${p.SKU}</strong>\n`;
+  html += `🔹 <strong>${name}</strong>\n`;
+  if (desc) html += `📝 ${desc}\n`;
+  if (lumen) html += `💡 Actual lumen: <strong>${lumen} lm</strong>\n`;
+  if (consumption) html += `⚡ Power consumption: <strong>${consumption} W</strong>\n`;
+  if (range) html += `📏 Range (1 LUX): <strong>${range} m</strong>\n`;
+
+  // Detect stripped HTML description
+  if (p['Produktbeskrivning ENG (HTML)']) {
+    const stripped = p['Produktbeskrivning ENG (HTML)'].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 300);
+    if (stripped.length > 20) html += `\n📋 ${stripped}...`;
+  }
+
+  html += `\n\n🔍 Search this product on <a href="https://strandseurope.com/en/?search=${encodeURIComponent(p.SKU)}" target="_blank">strandseurope.com →</a>`;
+  return html;
+}
+
 // ── CATEGORY TABS ─────────────────────────────────────────────────────────────
 const categoryQuestions = {
-  all: ['What light technology types exist?','What is lumen and lux?','What are ECE regulations?','How long is the warranty?','How do I track my order?','Do I need a CAN bus interface?','What is IP rating?','How do I contact support?'],
-  tech: ['What light technology types exist?','What is lumen and lux?','What is Kelvin?','What are beam patterns?','What are ECE regulations?','What is IP rating?','What amp rating do I need?'],
-  order: ['Is there a minimum order?','Can I change my order?','How long is delivery?','How do I track my order?','Do you offer express delivery?','I received the wrong product','Items missing from my order'],
+  all: ['Tell me about 809456','What is lumen and lux?','Do I need CAN bus?','How long is the warranty?','What is IP rating?','How do I contact support?','Tell me about NUUK D-LINE'],
+  product: ['Tell me about 809456XBB','Tell me about 901036','Tell me about 907055','Tell me about SIBERIA LED BAR','Tell me about 809212A','Tell me about 270494','What light should I choose?'],
+  tech: ['What is lumen and lux?','What is Kelvin?','What are beam patterns?','What are ECE regulations?','What is IP rating?','What amp rating do I need?','What are light technology types?'],
+  order: ['Is there a minimum order?','How long is delivery?','How do I track my order?','I received the wrong product','Items missing from my order','Do you offer express delivery?'],
   warranty: ['How long is the warranty?','My product has broken','Does warranty cover modifications?','Can I cut the cable?','Can I cut the DT connector?','I want to return a product'],
   canbus: ['Do I need a CAN bus interface?','Will XBB work with my new car?','Do I need resistors for LED taillights?','What happens after a software update?','Will high beam automatics work?'],
-  product: ['Which driving light should I choose?','What is No-Glare technology?','What is E-mode vs Xperience mode?','There is condensation in my light','Where can I find the manual?','Do you offer spare parts?'],
   contact: ['How do I contact support?','How do I become a reseller?','What are your opening hours?']
 };
 
@@ -250,40 +373,100 @@ function setCategory(cat, btn) {
 }
 
 // ── FAQ KNOWLEDGE BASE ────────────────────────────────────────────────────────
-const FAQ = [{"cat": "product", "keywords": ["809434", "SIBERIA XP DRC LED BAR 50\""], "answer": "{\"SKU\": 809434, \"Description 2 (BC)\": \"Yellow / White Pos. | Hello Func. | Built-in Relay\", \"Description EN (BC)\": \"SIBERIA XP DRC LED BAR 50\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP DRC LEDRAMP 50\\"\", \"Actual lumen\": 28100.0, \"Consumption\": \"\", \"Consumption specific function\": \"X-mode 404W,E-mode 75W,White pos. 18.5W,Yellow pos. 18.5W\", \"Produktbeskrivning ENG (HTML)\": \"Welcome the new Siberia XP Double Row Curved LED bar. This 50” model has a long-distance beam pattern with 3425 actual lumens in E-mode and a massive 28100 actual lumens in Xperience mode. The result is a 50% higher output than previous LED bar models. A visual range of 366/714 meters guarantees high forward visibility, and the 5700-kelvin color temperature ensures crisp and clear output. The LED bar is easy to install with the 2500 mm cable and an integrated relay. It is incredibly durable and can withstand vibrations, rough roads, and hard use. The curved shape of the LED bar will follow the lines of your vehicle perfectly. With an IP rating of IP68/IP69K, it is protected against dirt and water that may ruin your product. The Xperience DRC is covered by Strands Lighting Divisions’ 3-year function warranty and is EMC-approved according to ECE R10.\", \"1 LUX @ m\": 714.0}"}, {"cat": "product", "keywords": ["809433", "SIBERIA XP DRC LED BAR 42\""], "answer": "{\"SKU\": 809433, \"Description 2 (BC)\": \"Yellow / White Pos. | Hello Func. | Built-in Relay\", \"Description EN (BC)\": \"SIBERIA XP DRC LED BAR 42\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP DRC LEDRAMP 42\\"\", \"Actual lumen\": 24800.0, \"Consumption\": \"\", \"Consumption specific function\": \"X-mode 334W,E-mode 65W,White pos. 17.5W,Yellow pos. 17.5W\", \"Produktbeskrivning ENG (HTML)\": \"Welcome the new Siberia XP Double Row Curved LED bar. This 42” model has an extended beam pattern with 3450 actual lumens in E-mode and 24800 in Xperience mode. This means a 55% higher output than previous models. A visual range of 342/688 meters creates high forward visibility, and the 5700-kelvin color temperature ensures a crisp and clear illumination. It is easy to install thanks to the 2500 mm cable and an integrated relay. It is incredibly durable and can withstand vibrations, rough roads, and hard use. Its curved shape will follow the lines of your vehicle perfectly. With an IP rating of IP68/IP69K, it is protected against dirt and water that may ruin the light. The Xperience DRC is covered by Strands Lighting Divisions’ 3-year function warranty and is EMC-approved according to ECE R10.\", \"1 LUX @ m\": 688.0}"}, {"cat": "product", "keywords": ["809432", "SIBERIA XP DRC LED BAR 32\""], "answer": "{\"SKU\": 809432, \"Description 2 (BC)\": \"Yellow / White Pos. | Hello Func. | Built-in Relay\", \"Description EN (BC)\": \"SIBERIA XP DRC LED BAR 32\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP DRC LEDRAMP 32\\"\", \"Actual lumen\": 18590.0, \"Consumption\": \"\", \"Consumption specific function\": \"X-mode 242W,E-mode 55W,White pos. 18W,Yellow pos. 18W\", \"Produktbeskrivning ENG (HTML)\": \"Welcome the new Siberia XP Double Row Curved LED bar. This 32” model has an extended beam pattern with 3500 actual lumens in E-mode and 18590 in Xperience mode. This means a 45% higher output than previous models. A visual range of 358-610 meters creates high forward visibility, and the 5700-kelvin color temperature ensures a crisp and clear illumination. It is easy to install thanks to the 2500 mm cable and an integrated relay. It is incredibly durable and can withstand vibrations, rough roads, and hard use. Its curved shape will follow the lines of your vehicle perfectly. With an IP rating of IP68/IP69K, it is protected against dirt and water that may ruin the light. The Xperience DRC is covered by Strands Lighting Divisions’ 3-year function warranty and is EMC-approved according to ECE R10.\", \"1 LUX @ m\": 610.0}"}, {"cat": "product", "keywords": ["809431", "SIBERIA XP DRC LED BAR 22\""], "answer": "{\"SKU\": 809431, \"Description 2 (BC)\": \"Yellow / White Pos. | Hello Func. | Built-in Relay\", \"Description EN (BC)\": \"SIBERIA XP DRC LED BAR 22\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP DRC LEDRAMP 22\\"\", \"Actual lumen\": 13030.0, \"Consumption\": \"\", \"Consumption specific function\": \"X-mode 184W,E-mode 45W,White pos. 17.5W,Yellow pos. 17W\", \"Produktbeskrivning ENG (HTML)\": \"Welcome the new Siberia XP Double Row Curved LED bar. This 22” model has an extended beam pattern with 3100 actual lumens in E-mode and 13030 in Xperience mode. This means a 100% higher output than previous models. A visual range of 322/616 meters creates high forward visibility, and the 5700-kelvin color temperature ensures a crisp and clear illumination. It's easy to install with the 2500 mm cable and integrated relay. It's highly durable, capable of withstanding vibrations, rough roads, and hard use, and its curved shape perfectly follows the lines of your vehicle. With an IP rating of IP68/IP69K and a strong powder coating, it is protected against dirt and water that may ruin the light. The Xperience DRC is covered by Strands Lighting Divisions’ 3-year function warranty and is EMC-approved according to ECE R10.\", \"1 LUX @ m\": 616.0}"}, {"cat": "product", "keywords": ["809416", "SIBERIA XP SRC LED BAR 22\""], "answer": "{\"SKU\": 809416, \"Description 2 (BC)\": \"Yellow / White Pos. | Hello Func. | Built-in Relay\", \"Description EN (BC)\": \"SIBERIA XP SRC LED BAR 22\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP SRC LEDRAMP 22\\"\", \"Actual lumen\": 7050.0, \"Consumption\": 110.0, \"Consumption specific function\": \"X-mode 107W,E-mode 45W,White pos. 9.5W,Yellow pos. 9.5W\", \"Produktbeskrivning ENG (HTML)\": \"Welcome the new Siberia XP Single Row Curved LED bar. This 22” model has an extended beam pattern with 3175 actual lumens in E-mode and 7050 in Xperience mode. This results in a 55% higher output than previous models. A visual range of 387-467 meters creates high forward visibility, and the 5700-kelvin color temperature ensures a crisp and clear illumination. The Siberia XP is easy to install thanks to the 2500 mm cable and built-in relay. It is incredibly durable and can withstand vibrations, rough roads, and hard use. It has an IP rating of IP68/IP69K, which ensures high protection against dirt and water. Siberia XP SRC is covered by Strands Lighting Divisions’ 3-year function warranty and is EMC-approved according to ECE R10.\", \"1 LUX @ m\": 467.0}"}, {"cat": "product", "keywords": ["809418", "SIBERIA XP SRC LED BAR 42\""], "answer": "{\"SKU\": 809418, \"Description 2 (BC)\": \"Yellow / White Pos. | Hello Func. | Built-in Relay\", \"Description EN (BC)\": \"SIBERIA XP SRC LED BAR 42\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP SRC LEDRAMP 42\\"\", \"Actual lumen\": 13700.0, \"Consumption\": \"\", \"Consumption specific function\": \"X-mode 234W,E-mode 70W,White pos. 19W,Yellow pos. 19W\", \"Produktbeskrivning ENG (HTML)\": \"Welcome the new Siberia XP Single Row Curved LED bar. This 42” model has an extended beam pattern with 4175 actual lumens in E-mode and 13700 in Xperience mode. This means a 44% higher output than previous LED bars. A visual range of 361/530 meters creates high forward visibility, and the 5700-kelvin color temperature ensures impeccable illumination. It is incredibly sturdy and long-lived and can withstand vibrations, rough roads, and hard use. It has an IP rating of IP68/IP69K, which ensures high protection against dirt and water. Siberia XP SRC is covered by Strands Lighting Divisions’ 3-year function warranty and is EMC-approved according to ECE R10. The Siberia XP is easy to install thanks to the 2500 mm cable and integrated relay.\", \"1 LUX @ m\": 530.0}"}, {"cat": "product", "keywords": ["809417", "SIBERIA XP SRC LED BAR 32\""], "answer": "{\"SKU\": 809417, \"Description 2 (BC)\": \"Yellow / White Pos. | Hello Func. | Built-in Relay\", \"Description EN (BC)\": \"SIBERIA XP SRC LED BAR 32\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP SRC LEDRAMP 32\\"\", \"Actual lumen\": 10600.0, \"Consumption\": 165.0, \"Consumption specific function\": \"X-mode 164W,E-mode 55W,White pos. 14.5W,Yellow pos. 14.5W\", \"Produktbeskrivning ENG (HTML)\": \"Welcome the new Siberia XP Single Row Curved LED bar. This 32” model has an extended beam pattern with 3600 actual lumens in E-mode and 10600 in Xperience mode. This means a 30% higher output than previous models. A visual range of 333-478 meters creates high forward visibility, and the color temperature of 5700 kelvin ensures bright and precise illumination. The Siberia XP is easy to install thanks to the 2500 mm cable and integrated relay. It is incredibly durable, vibration-resistant, and can withstand rough roads and rugged use. It has an IP rating of IP68/IP69K, which ensures high protection against dirt and water. Siberia XP SRC is covered by Strands Lighting Divisions’ 3-year function warranty and is EMC-approved according to ECE R10.\", \"1 LUX @ m\": 478.0}"}, {"cat": "product", "keywords": ["809419", "SIBERIA XP SRC LED BAR 50\""], "answer": "{\"SKU\": 809419, \"Description 2 (BC)\": \"Yellow / White Pos. | Hello Func. | Built-in Relay\", \"Description EN (BC)\": \"SIBERIA XP SRC LED BAR 50\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP SRC LEDRAMP 50\\"\", \"Actual lumen\": 15600.0, \"Consumption\": 235.0, \"Consumption specific function\": \"X-mode 235W,E-mode 80W,White pos. 23.5W,Yellow pos. 23.5W\", \"Produktbeskrivning ENG (HTML)\": \"Welcome the new Siberia XP Single Row Curved LED bar. This 50” model has an extended beam pattern with 4275 actual lumens in E-mode and 15600 in Xperience mode. This means a 40% higher output than previous models. A visual range of 355/513 meters creates high forward visibility, and the 5700-kelvin color temperature ensures a crisp and clear illumination. The Siberia XP is easy to install thanks to the 2500 mm cable and integrated relay. It is incredibly durable and can withstand vibrations, rough roads, and hard use. It has an IP rating of IP68/IP69K, which ensures high protection against dirt and water. Siberia XP SRC is covered by Strands Lighting Divisions’ 3-year function warranty and is EMC-approved according to ECE R10.\", \"1 LUX @ m\": 513.0}"}, {"cat": "product", "keywords": ["270965", "SIBERIA X LENS COVER CLEAR FLOOD 9\""], "answer": "{\"SKU\": 270965, \"Description 2 (BC)\": \"Stone chip cover | Clear\", \"Description EN (BC)\": \"SIBERIA X LENS COVER CLEAR FLOOD 9\\"\", \"Not in use Description SE (BC)\": \"SIBERIA X LINSSKYDD KLART FLOOD 9\\"\", \"Actual lumen\": \"\", \"Consumption\": \"\", \"Consumption specific function\": \"\", \"Produktbeskrivning ENG (HTML)\": \"To further customize your Siberia X, you can choose between different lens covers to suit your adventure. Just click the cover into place, and you’re ready to go. The clear flood cover increases output to the sides of the vehicle and fits Siberia X 9” (Part No. 270961). With this lens cover you’ll get an output of 1350 actual lumens with 260 meter range in E-mode, and 12170 actual lumens with 663 meter range in Xperience mode.\", \"1 LUX @ m\": 663.0}"}, {"cat": "product", "keywords": ["270963", "SIBERIA X LENS COVER CLEAR FLOOD 7\""], "answer": "{\"SKU\": 270963, \"Description 2 (BC)\": \"Stone chip cover | Clear\", \"Description EN (BC)\": \"SIBERIA X LENS COVER CLEAR FLOOD 7\\"\", \"Not in use Description SE (BC)\": \"SIBERIA X LINSSKYDD KLART FLOOD 7\\"\", \"Actual lumen\": \"\", \"Consumption\": \"\", \"Consumption specific function\": \"\", \"Produktbeskrivning ENG (HTML)\": \"To further customize your Siberia X, you can choose between different lens covers to suit your adventure. Just click the cover into place, and you’re ready to go. The clear flood cover increases output to the sides of the vehicle and fits Siberia X 7” (Part No. 270960). With this lens cover you’ll get an output of 1500 actual lumens with 257 meter range in E-mode, and 6820 actual lumens with 500 meter range in Xperience mode.\", \"1 LUX @ m\": 500.0}"}, {"cat": "product", "keywords": ["809265", "SIBERIA XP HEAT WORK LIGHT 70W"], "answer": "{\"SKU\": 809265, \"Description 2 (BC)\": \"Red / Amber Pos. | Heated Lens\", \"Description EN (BC)\": \"SIBERIA XP HEAT WORK LIGHT 70W\", \"Not in use Description SE (BC)\": \"SIBERIA XP HEAT ARBETSLJUS 70W\", \"Actual lumen\": 3710.0, \"Consumption\": 70.0, \"Consumption specific function\": \"Work 70W,Red pos. 1.5W,Amber pos. 2W,Heating 25W\", \"Produktbeskrivning ENG (HTML)\": \"XPERIENCE HEAT: never let ice-covered lights slow you down again. The robust and heavy-duty Siberia XP Heat has a heated lens, keeping it free from ice in cold and wet weather. A massive output of 3710 actual lumens and a 68-meter range offer maximum visibility in any storm. The automatic heating function connects with a separate cable and activates when the temperature reaches or falls below 5°C to keep the lens ice-free. An IP rating of IP68/IP69K, a solid aluminum housing, and a tempered glass lens guarantee lasting quality. Its sturdy, vibration-resistant build is designed for heavy-duty use and is a perfect fit for trucks and other heavy vehicles. It has red and amber position lights that can be connected to the heating function or the indicator lights. Installation is easy thanks to a 2000 mm cable. It can be installed using a frame for surface mounting (Part No. 809264).\", \"1 LUX @ m\": 68.0}"}, {"cat": "product", "keywords": ["270992", "SIBERIA XP DRIVING LIGHT 9\""], "answer": "{\"SKU\": 270992, \"Description 2 (BC)\": \"White / Yellow Pos. | Hello Func. | DT-4Pin\", \"Description EN (BC)\": \"SIBERIA XP DRIVING LIGHT 9\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP EXTRALJUS 9\\"\", \"Actual lumen\": 15030.0, \"Consumption\": 145.0, \"Consumption specific function\": \"X-mode 144W,E-mode 31W,White pos. 5.5W,Yellow pos. 5.5W\", \"Produktbeskrivning ENG (HTML)\": \"With its 3080/15030 incredible actual lumens, the Siberia XP 9” will light up the darkest night and most challenging roads. This updated driving light has a long-distance beam pattern with E-mode and Xperience-mode. This results in a range of 330/711 meters, ensuring very high forward visibility. Choose between two lens covers for a perfectly customized output: dark and yellow. The XP 9” also features a new yellow and white position light and Hello function. Its durable materials and new powder coating make it a long-lived addition to any vehicle, with an IP rating of IP68/IP69K. Enjoy an effortless installation thanks to the DT-4 connector and 150 mm cable, saving you the hassle of connecting cables. It is E-approved ECE R149(R112), R148(R7), and EMC certified ECE R10.\", \"1 LUX @ m\": 711.0}"}, {"cat": "product", "keywords": ["270985", "SIBERIA XP DRIVING LIGHT 7\""], "answer": "{\"SKU\": 270985, \"Description 2 (BC)\": \"White / Yellow Pos. | Hello Func. | DT-4Pin\", \"Description EN (BC)\": \"SIBERIA XP DRIVING LIGHT 7\\"\", \"Not in use Description SE (BC)\": \"SIBERIA XP EXTRALJUS 7\\"\", \"Actual lumen\": 5710.0, \"Consumption\": 77.0, \"Consumption specific function\": \"X-mode 77W,E-mode 22W,White pos. 5.5W,Yellow pos. 5.5W\", \"Produktbeskrivning ENG (HTML)\": \"With its 1540/5710 incredible actual lumens, the Siberia XP 7” will light up the darkest night and most challenging roads. This updated driving light has an extended beam pattern with E-mode and Xperience-mode. This results in a range of 342/662 meters, ensuring high forward visibility. The XP 7” also features a new yellow and white position light and Hello function. Its durable materials and new powder coating make it a long-lived addition to any vehicle, with an IP rating of IP68/IP69K. Enjoy an effortless installation thanks to the DT-4 connector and 150 mm cable, saving you the hassle of connecting cables. It is E-approved ECE R149(R112), R148(R7), and EMC certified ECE R10.\", \"1 LUX @ m\": 660.0}"}, {"cat": "product", "keywords": ["850122", "LWL-11 DIRECTIONAL WARNING LIGHT"], "answer": "{\"SKU\": 850122, \"Description 2 (BC)\": \"10-32V | 21 Patterns | 1M Cable\", \"Description EN (BC)\": \"LWL-11 DIRECTIONAL WARNING LIGHT\", \"Not in use Description SE (BC)\": \"LWL-11 RIKTAT BLIXTLJUS\", \"Actual lumen\": \"\", \"Consumption\": 4.0, \"Consumption specific function\": \"\", \"Produktbeskrivning ENG (HTML)\": \"\", \"1 LUX @ m\": \"\"}"}, {"cat": "product", "keywords": ["809289", "NUUK D-LINE MC WORK LIGHT 39W"], "answer": "{\"SKU\": 809289, \"Description 2 (BC)\": \"Red / Amber Pos. | DT-4Pin\", \"Description EN (BC)\": \"NUUK D-LINE MC WORK LIGHT 39W\", \"Not in use Description SE (BC)\": \"NUUK D-LINE MC ARBETSLJUS 39W\", \"Actual lumen\": 2740.0, \"Consumption\": 39.0, \"Consumption specific function\": \"Work 39W,Red pos. 3W,Amber pos.4W\", \"Produktbeskrivning ENG (HTML)\": \"Experience hardcore quality for any workspace. With 2740 actual lumens, 5700 K, and a 65 m range, it illuminates any workspace safely and efficiently. The stylish MC work light has an updated round design and will fit anywhere. Built to endure, its high-quality materials and IP68/69K rating make it perfect for use in any environment. From the feel of the materials to the bright and wide beam, every detail of the MC reflects quality built to last. Thanks to the updated rounded shape, water is quickly led away from the lens to keep the output crisp. Installation is quick and simple with a 180° adjustable bracket and a 150 mm cable with a DT-4 connector, giving you flexibility and control. The amber and red position light adds an eye-catching style and glow.\", \"1 LUX @ m\": 65.0}"}, {"cat": "product", "keywords": ["809288", "NUUK D-LINE MC DRIVING LIGHT 3\""], "answer": "{\"SKU\": 809288, \"Description 2 (BC)\": \"White / Yellow Pos. | Round\", \"Description EN (BC)\": \"NUUK D-LINE MC DRIVING LIGHT 3\\"\", \"Not in use Description SE (BC)\": \"NUUK D-LINE MC EXTRALJUS 3\\"\", \"Actual lumen\": 2540.0, \"Consumption\": 39.0, \"Consumption specific function\": \"Driving 39W,White pos. 3W,Yellow pos. 3.5W\", \"Produktbeskrivning ENG (HTML)\": \"The Nuuk D-Line MC 3\\" driving light will fit anywhere and is E-approved R149/R148 for motorcycles with reference number 12,5, ready to embrace the adventure. With 2540 actual lumens, 5700 K, and a 276 m range, the optimized beam is a big boost to your standard MC high beam. Built to endure any task, its high-quality materials and IP68/69K rating make it a top choice for demanding off-road challenges. From the rounded lens to the bright beam, every detail of the MC reflects hardcore quality built to last. Choose between white and yellow position lights to add a unique style and glow. Installation is quick and simple with a 180° adjustable bracket and a 150 mm cable with a DT-4 connector, giving you flexibility and control.\", \"1 LUX @ m\": 276.0}"}, {"cat": "product", "keywords": ["809287", "NUUK D-LINE QB WORK LIGHT 39W"], "answer": "{\"SKU\": 809287, \"Description 2 (BC)\": \"Red / Amber Pos. | DT-4Pin\", \"Description EN (BC)\": \"NUUK D-LINE QB WORK LIGHT 39W\", \"Not in use Description SE (BC)\": \"NUUK D-LINE QB ARBETSLJUS 39W\", \"Actual lumen\": 2920.0, \"Consumption\": 39.0, \"Consumption specific function\": \"Work 39W,Red pos. 3W,Amber pos.4W\", \"Produktbeskrivning ENG (HTML)\": \"The Nuuk D-Line Qube 3\\" work light is made for professional use, with 2920 actual lumens, 5700 K color temperature, and a 59 m range. Built to endure, its high-quality materials and IP68/69K rating make it ready for demanding jobs in difficult environments. Its rounded shape keeps the water away from the lens to clear the light, and the amber and red position light adds an eye-catching style and glow. From the feel of the materials to the bright and wide beam, every detail of the Qube reflects hardcore quality built to last. Installation is quick and simple with a 180° adjustable bracket and a 150 mm cable with a DT-4 connector, giving you flexibility and control. Its compact size ensures a perfect fit anywhere and for any vehicle, such as on the steps of your truck.\", \"1 LUX @ m\": 59.0}"}, {"cat": "product", "keywords": ["809286", "NUUK D-LINE QB DRIVING LIGHT 3\""], "answer": "{\"SKU\": 809286, \"Description 2 (BC)\": \"White / Yellow Pos. | Square\", \"Description EN (BC)\": \"NUUK D-LINE QB DRIVING LIGHT 3\\"\", \"Not in use Description SE (BC)\": \"NUUK D-LINE QB EXTRALJUS 3\\"\", \"Actual lumen\": 2710.0, \"Consumption\": 41.0, \"Consumption specific function\": \"Driving 41W,White pos. 3W,Yellow pos. 3.5W\", \"Produktbeskrivning ENG (HTML)\": \"The Qube 3\\" driving light is a small driving light with an impressive range and a unique design, perfect for 4x4s, ATVs, UTVs, and MCs. With 2710 actual lumens, 5700 K color temperature, and a 240 m range, it cuts through the dark with ease. The rounded lens delivers an exceptional output and leads water away from the lens in rainy weather. Built to endure, its high-quality materials and IP68/69K rating make it ready for demanding off-road challenges. From the feel of the materials to the bright and focused beam, every detail of the Qube reflects quality built to last. Installation is quick and simple with a 180° adjustable bracket and a 150 mm cable with a DT-4 connector, giving you flexibility and control. The white and yellow position light adds an eye-catching style and glow to any vehicle.\", \"1 LUX @ m\": 240.0}"}];
+const FAQ = [
+  { cat:'tech', keywords:['light technology','halogen','xenon','led','types of lights','kind of technology','what technology'], answer:`The most common types are halogen, xenon, and LED:\n\n💡 Halogen — Uses halogen gas and a filament. Brighter than regular bulbs but less luminous and shorter lifespan than xenon or LED. Generates significant heat.\n\n💡 Xenon — Contains xenon gas, no filament. Longer lifespan, less power consumption than halogen.\n\n💡 LED — The most modern technology used in most Strands products:\n• Very long lifespan\n• Low power consumption\n• Short ignition time\n• Better resistance to vibrations\n\n🔗 <a href="https://strands.se/kunskapsbank/valj-ratt-extraljus-den-ultimata-guiden/" target="_blank">Read more in our knowledge bank →</a>` },
+  { cat:'tech', keywords:['lumen','lux','light output','brightness','intensity','luminous'], answer:`Lumen and lux explained:\n\n📏 Lumen — Measures luminous flux (strength) from a light source. Strands always refers to actual lumens — not theoretical values.\n\n📏 Lux — Measures illuminance: how much light hits a specific surface. 1 lux = 1 lumen per m². Driving lights often state "1 lux @ x meters". For example: 1 lux @ 700m means 1 lumen/m² at 700 meters.\n\n🔬 Strands has an advanced light laboratory for accurate measurements.` },
+  { cat:'tech', keywords:['kelvin','color temperature','warm','cool','white light','colour'], answer:`Kelvin is a measure of color temperature:\n\n🌡️ Higher Kelvin = cooler, bluer light\n🌡️ Lower Kelvin = warmer, redder light\n\nFor driving/work lights, cooler color temperature is usually ideal — clear, distinct beam.\nWarmer color can be better in rain/snow — reduces glare from water particles.` },
+  { cat:'tech', keywords:['beam pattern','beam','flood','combo','pencil','optimized','extended','long-distance'], answer:`Strands offers three main beam patterns:\n\n🔦 Optimized (Flood) — Widest beam. Best for winding roads — spots hazards on the sides.\n🔦 Extended (Combo) — Combination of width and distance. Versatile all-rounder.\n🔦 Long-distance (Pencil) — Narrow beam with maximum range. Best for highways and mountain roads.` },
+  { cat:'tech', keywords:['ece','e-approved','regulations','legal','road legal','approval','r112','r87','r91'], answer:`ECE regulations (E-approved) govern permitted vehicle lights, their intensity, and installation rules.\n\nKey rules:\n• Driving light must not be too powerful\n• Position lights must have the correct color\n• Placement and quantity rules apply\n\nMany Strands lights have two modes: E-mode (approved) and Xperience mode.\n\nECE categories: R3 Reflectors · R6 Indicators · R7 Position lights · R19 Fog lights · R65 Warning lights · R87 DRL · R91 Side markers · R112 Headlamps` },
+  { cat:'tech', keywords:['ip rating','ip class','ip66','waterproof','dustproof','water protection','ip67','ip69'], answer:`IP rating indicates protection against solids and liquids.\n\nFirst digit (dust): 5=protected, 6=dust-tight\nSecond digit (water): 5=jets, 6=powerful jets, 7=submerged, 8=continuous immersion, 9K=high-pressure/hot\n\nExample: IP66 = dust-tight + powerful water jet protection.\n⚠️ Lower IP rating may not withstand car washing.` },
+  { cat:'tech', keywords:['relay','fuse','cable','amp','ampere','installation','wire gauge','wiring'], answer:`Relay, fuse, and cable guidelines:\n\n• Relay: At least 10% above maximum load — higher amp than the fuse.\n• Fuse: Just above total maximum load (weakest link by design).\n• Cable cross-section: Depends on load, length, and material — no universal answer.\n\n⚠️ If unsure, consult a vehicle electrician.` },
+  { cat:'order', keywords:['minimum order','order limit','minimum','smallest order'], answer:`There is no minimum order limit at Strands. Order as little or as much as you need! 🛒` },
+  { cat:'order', keywords:['change order','modify order','cancel order','edit order','update order'], answer:`Orders are processed promptly — changes cannot be made once confirmed (including address).\n\nIf your order is not yet confirmed:\n📞 +46(0)320-450450\n⏰ 08:00–17:00 on business days.` },
+  { cat:'order', keywords:['missing item','items missing','missing from order','incomplete order','not all items'], answer:`Missing items in your order?\n\nThe item may be on backorder, or something went wrong during picking.\n\nContact us right away:\n📧 support@strands.se\n📞 +46(0)320-450450` },
+  { cat:'order', keywords:['wrong product','wrong item','incorrect product','received wrong','got wrong'], answer:`We apologize for the mix-up! Contact support immediately:\n📧 support@strands.se\n📞 +46(0)320-450450\n⏰ 08:00–17:00 on business days.` },
+  { cat:'order', keywords:['track order','tracking','where is my order','follow package','postnord','shipment status'], answer:`Once shipped, you'll receive an email with a tracking link.\n\nYou can also track via the PostNord app or transport company's website.` },
+  { cat:'order', keywords:['express delivery','express shipping','fast delivery','urgent delivery','overnight'], answer:`Strands does not currently offer express delivery. We ship via PostNord which does not have an express option.` },
+  { cat:'order', keywords:['delivery time','how long','shipping time','when will','estimated delivery'], answer:`Delivery times:\n🇸🇪 Sweden: Approximately 1–4 business days.\n🌍 International: Varies by destination.\n📧 support@strands.se for an estimate.` },
+  { cat:'order', keywords:['reseller','become reseller','retailer','dealer','distribute','wholesaler'], answer:`Interested in becoming a Strands reseller?\n📧 order@strands.se\n🔗 <a href="https://strandseurope.com/sv/become-a-retailer" target="_blank">Become a retailer →</a>` },
+  { cat:'warranty', keywords:['warranty','guarantee','how long warranty','warranty period','years warranty'], answer:`Strands Lighting Division (SLD) products: 3 to 6-year warranty depending on product.\nOther product ranges: typically 1 year.\n\nCovers defects from production/manufacturing — NOT incorrect use or installation.\n🔗 <a href="https://strandseurope.com/sv/about-us/function-warranty" target="_blank">Full warranty terms →</a>` },
+  { cat:'warranty', keywords:['product broken','broken','stopped working','not working','make a claim','warranty claim'], answer:`Product broken?\n• If from a retailer → contact the retailer directly.\n• Direct claim with Strands:\n📧 reklamation@strands.se\n🔗 <a href="https://strandseurope.com/sv/contact/claims-and-returns" target="_blank">Claims & returns →</a>` },
+  { cat:'warranty', keywords:['return','regret','cancel','right of withdrawal','ordered wrong'], answer:`Right of withdrawal does not apply to B2B transactions. Company orders are binding.\n\nHowever, Strands is solution-oriented — contact us early and we'll try to help.\n📧 support@strands.se\n🔗 <a href="https://strandseurope.com/sv/contact/claims-and-returns" target="_blank">Claims & returns →</a>` },
+  { cat:'warranty', keywords:['modify product','modification','warranty void','tamper','disassemble','opened product','open lamp'], answer:`Opening or modifying a sealed product voids the warranty.\n\n✅ If product is designed to be opened (e.g. halogen light for bulb replacement) — warranty maintained.\n❌ Opening a sealed LED bar — warranty expires.\n\n🔗 <a href="https://strandseurope.com/sv/about-us/function-warranty" target="_blank">Warranty terms →</a>` },
+  { cat:'warranty', keywords:['cut dt connector','dt connector','dt plug'], answer:`The warranty does NOT apply if you cut the DT connector.\n🔗 <a href="https://strandseurope.com/sv/about-us/function-warranty" target="_blank">Warranty terms →</a>` },
+  { cat:'warranty', keywords:['cut cable','shorten cable','cable length','cut wire'], answer:`Warranty does not apply if you cut the cable shorter than 50 cm.\n🔗 <a href="https://strandseurope.com/sv/about-us/function-warranty" target="_blank">Warranty terms →</a>` },
+  { cat:'canbus', keywords:['canbus interface','can bus','270417','when do i need','need interface','canbuss'], answer:`When do you need a CAN bus interface (Part No. 270417)?\n\nYou need it when connecting an LED bar/driving lights to high beam, AND your vehicle only delivers a current pulse (not constant power) to activate the high beam.\n\n• Direct connection to battery with separate panel: no CAN bus issue\n• If using high beam as trigger signal for relay: CAN bus interface needed\n\nMainly needed for vehicles with xenon or LED headlamps.` },
+  { cat:'canbus', keywords:['high beam automatic','adaptive high beam','auto high beam'], answer:`Adaptive/automatic high beam will NOT work with the CAN bus interface (Part No. 270417).\n\nIt will still function in manual high beam mode.` },
+  { cat:'canbus', keywords:['software update','car update','firmware car','workshop update'], answer:`If your car's software is updated, the CAN bus system may use a new signal.\n\n• The interface will stop working and needs updating through Nitor.\n• If more than 12 months old, it may need to be replaced.` },
+  { cat:'canbus', keywords:['resistor','led taillights','tail light','error message led','load resistor'], answer:`Do you need resistors for LED taillights?\n\nIt depends on your car:\n• Some cars work fine without resistors.\n• Others won't activate the light without one (tricks the car's computer into detecting a bulb).\n• Newer/higher-end cars are more sensitive.\n\n💡 Try without a resistor first. If the light doesn't work correctly, purchase a resistor.` },
+  { cat:'canbus', keywords:['xbb dongle','will xbb work','xbb new car','obd port locked','firewall obd','secure gateway','pp-can','270425','907003'], answer:`Will XBB Dongle work with your new car?\n\n1. Check the Recipe (compatible vehicle list):\n🔗 <a href="https://www.xbb.se/xbbTable/bilmodeller.php" target="_blank">Compatible car list →</a>\n\n2. OBD Port accessibility:\nSome newer vehicles (Volvo post-2017, some Mercedes, newer VAG) have a "firewall" on the OBD port.\n\nSolutions:\n• Standard: XBB Dongle/PowerUnit kit (270425) + wiring harness (907003)\n• Locked OBD port: PP-CAN + wiring (907051 + 907052)\n• No OBD port: PP-CAN-FD — connects directly to CAN bus\n\n💡 Contact Strands with your registration number:\n📧 support@strands.se` },
+  { cat:'canbus', keywords:['how to use xbb','xbb setup','xbb install','configure xbb','xbb configurator'], answer:`How to use XBB / CAN bus interface:\n\n1. Check compatible recipe for your car:\n🔗 <a href="https://www.xbb.se/en/compatible-cars/" target="_blank">Compatible cars →</a>\n2. Download XBB Configurator app\n3. Connect XBB Dongle to OBD2 port\n4. Pair in app and select a recipe\n5. Test signals\n6. Install lights and XBB PowerUnit with correct wiring\n7. Connect to PowerUnit in app\n8. Start car and test lights\n\n🔗 <a href="https://www.xbb.se/en/snabbguide/" target="_blank">Full installation guide →</a>` },
+  { cat:'product', keywords:['which light','which driving light','choose light','right light','light for my car','suitable light','what light'], answer:`Choosing the right driving light:\n\n🚛 Large car/truck → 9" driving light or larger LED bar\n🚐 LCV/regular car → 7" driving light or slim LED bar\n\nBeam patterns:\n• Long straight roads → Long-distance/pencil beam\n• Winding forest/country roads → Optimized/flood\n• All-round → Extended/combo\n\n🔗 <a href="https://strandseurope.com" target="_blank">Browse Strands products →</a>` },
+  { cat:'product', keywords:['no-glare','noglare','glare','blinding','for9t'], answer:`No-Glare technology (featured in FOR9T):\n\nThe unique lens divides light output:\n• Stronger in the lower part of the beam\n• More diffused further up\n\nPrevents tired eyes from glare while providing maximum forward visibility.` },
+  { cat:'product', keywords:['e-mode','xperience mode','two modes','light modes','road legal mode'], answer:`E-mode vs Xperience mode:\n\n✅ E-mode — E-approved and road legal. Significant boost to high beam. Better in rain/snow — less glare from water.\n\n⚡ Xperience mode — Maximum power mode. Most impressive output in terms of luminosity and range. Optimal for very dark conditions.` },
+  { cat:'product', keywords:['repair','repairs','fix product','service product'], answer:`Strands does not offer product repairs.\n\nMost products are sealed from the factory. If your product has a fault:\n📧 reklamation@strands.se\n🔗 <a href="https://strandseurope.com/sv/contact/claims-and-returns" target="_blank">Claims & returns →</a>` },
+  { cat:'product', keywords:['manual','instruction','user guide','find manual','product manual','documentation'], answer:`Download the product manual from the product page on strandseurope.com.\n\nIf you can't find it:\n📧 support@strands.se` },
+  { cat:'product', keywords:['spare parts','replacement parts','spare','parts available'], answer:`Strands can sometimes offer spare parts and mounting accessories.\n\n📧 support@strands.se\n🔗 <a href="https://strandseurope.com/sv/kategorier/monteringstillbehor/fasten" target="_blank">Browse mounting accessories →</a>` },
+  { cat:'product', keywords:['condensation','moisture','water inside lamp','fog inside','water in light'], answer:`Condensation inside a lamp is normal — caused by humidity and temperature changes.\n\nMost Strands lights have a breather vent. The moisture will dissipate through this vent when you use the lamp — no action needed.` },
+  { cat:'product', keywords:['where install','placement','install lights','position lights','where to mount','height'], answer:`For maximum visibility, install lights as high as possible on the vehicle:\n• Less shadows on the road\n• Fewer "dark spots"\n• Better overall light experience` },
+  { cat:'contact', keywords:['contact','support','phone','email','reach','get in touch','customer service','help','opening hours'], answer:`Strands contact information:\n\n📞 Phone: +46(0)320-450450\n📧 Customer service: order@strands.se\n📧 Technical support: support@strands.se\n📧 Warranty claims: reklamation@strands.se\n\n🕐 Opening hours: 08:00–17:00 on business days\nEmails answered within 24 hours on business days.\n\n🏢 Strands Group AB, Hagalundsvägen, 51172 Fritsla, Sweden` },
+  { cat:'contact', keywords:['images','photos','copyright','use images','use text','website content','permission'], answer:`All content on the Strands website is owned by Strands or used with permission, and is copyright protected.\n\nCopying images or materials without Strands' prior consent is forbidden. Please contact us first:\n📧 support@strands.se` }
+];
 
 // ── MATCHING ENGINE ───────────────────────────────────────────────────────────
 function findAnswer(query) {
   const q = query.toLowerCase();
-  let bestMatch = null;
-  let bestScore = 0;
 
+  // Check if asking about product listing/export
+  if (q.includes('export') && (q.includes('product') || q.includes('list') || q.includes('excel'))) {
+    exportProductsToExcel();
+    return `📥 I've exported the full product list to Excel! Check your downloads folder.\n\nThe file contains all ${PRODUCTS.length} SKUs with names, descriptions, lumen output, consumption, and range data.`;
+  }
+
+  // Check for product-related query by SKU or product name
+  if (q.match(/\b\d{5,}\b/) || q.includes('sku') || q.match(/[A-Z]{2,}\d{4,}/) || PRODUCTS.some(p => p.SKU && q.includes(p.SKU.toLowerCase()))) {
+    const product = findProduct(query);
+    if (product) {
+      return formatProductAnswer(product);
+    }
+  }
+
+  // Try name-based product search
+  const nameTerms = ['nuuk','siberia','big energy','firefly','cruise light','iZE','xbb','pp-can','relay box','beacon','freedom work','scene work','portable work'];
+  for (const term of nameTerms) {
+    if (q.includes(term)) {
+      const product = findProduct(term);
+      if (product) return formatProductAnswer(product);
+    }
+  }
+
+  // FAQ matching
+  let bestMatch = null, bestScore = 0;
   for (const faq of FAQ) {
     let score = 0;
     for (const kw of faq.keywords) {
-      if (q.includes(kw.toLowerCase())) {
-        score += kw.split(' ').length;
-      }
+      if (q.includes(kw.toLowerCase())) score += kw.split(' ').length;
     }
-    if (score > bestScore) {
-      bestScore = score;
-      bestMatch = faq;
-    }
+    if (score > bestScore) { bestScore = score; bestMatch = faq; }
   }
 
   if (bestScore > 0) return bestMatch.answer;
 
-  return `I'm not sure about that specific question. Here are ways to get help:\n\n📧 <a href="mailto:support@strands.se">support@strands.se</a>\n📞 +46(0)320-450450\n🔗 <a href="https://strandseurope.com" target="_blank">strandseurope.com →</a>\n\nTry rephrasing — I cover: light technology, ECE regulations, IP ratings, orders, delivery, warranty, CAN bus/XBB, and product questions.`;
+  // No answer found — log and offer export
+  logUnanswered(query);
+  return `I couldn't find a specific answer to that question.\n\n📧 <a href="mailto:support@strands.se">support@strands.se</a>\n📞 +46(0)320-450450\n🔗 <a href="https://strandseurope.com" target="_blank">strandseurope.com →</a>\n\nYour question has been logged. <button class="download-btn" onclick="exportUnansweredToExcel()">📥 Download unanswered questions</button>`;
 }
 
 // ── CHAT UI ───────────────────────────────────────────────────────────────────
-function addMessage(role, html) {
+function addMessage(role, html, extraHTML) {
   const messages = document.getElementById('messages');
   const div = document.createElement('div');
   div.className = `message ${role}`;
+
+  const avatarLabel = role === 'bot' ? 'STR\nAND' : 'You';
   div.innerHTML = `
-    <div class="avatar ${role}-avatar">${role === 'bot' ? 'STR' : 'You'}</div>
-    <div class="bubble">${html.replace(/\n/g, '<br>')}</div>
+    <div class="avatar ${role}-avatar" style="white-space:pre-line">${avatarLabel}</div>
+    <div class="bubble">${html.replace(/\n/g, '<br>')}${extraHTML ? '<br>' + extraHTML : ''}</div>
   `;
   messages.appendChild(div);
   messages.scrollTop = messages.scrollHeight;
@@ -293,7 +476,7 @@ function showTyping() {
   const messages = document.getElementById('messages');
   const div = document.createElement('div');
   div.className = 'message bot'; div.id = 'typing';
-  div.innerHTML = `<div class="avatar bot-avatar">STR</div><div class="bubble"><div class="dots"><span></span><span></span><span></span></div></div>`;
+  div.innerHTML = `<div class="avatar bot-avatar" style="white-space:pre-line;font-size:9px">STR\nAND</div><div class="bubble"><div class="dots"><span></span><span></span><span></span></div></div>`;
   messages.appendChild(div);
   messages.scrollTop = messages.scrollHeight;
 }
@@ -318,13 +501,14 @@ function sendMessage() {
   showTyping();
   setTimeout(() => {
     removeTyping();
-    addMessage('bot', findAnswer(text));
-  }, 500 + Math.random() * 300);
+    const answer = findAnswer(text);
+    addMessage('bot', answer);
+  }, 400 + Math.random() * 250);
 }
 
 window.onload = () => {
   setTimeout(() => {
-    addMessage('bot', `Hi! 👋 I'm the Strands FAQ assistant. I can help you with:\n\n• Light technology (lumen, lux, Kelvin, ECE, IP rating)\n• Orders, delivery & returns\n• Warranty & claims\n• CAN bus & XBB installation\n• Product questions\n\nUse the tabs above to browse by topic, or just ask me anything!`);
+    addMessage('bot', `Hi! 👋 I'm the STRAND FAQ & Product Assistant.\n\nI can help you with:\n• 📦 Product lookup by SKU or name (${PRODUCTS.length} products loaded)\n• 💡 Light technology (lumen, lux, Kelvin, ECE, IP rating)\n• 🛒 Orders, delivery & returns\n• 🛡️ Warranty & claims\n• 🔌 CAN bus & XBB installation\n\nUnanswered questions are automatically logged and you can export them as an Excel file.\n\nTry asking: "Tell me about SKU 809456" or "What is lumen?"`);
   }, 400);
 };
 </script>
